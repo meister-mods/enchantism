@@ -1,6 +1,7 @@
 package io.github.meistermods.enchantism.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import io.github.meistermods.enchantism.menu.SpecialEnchantmentMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,8 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
-public final class SpecialEnchantmentScreen
-        extends AbstractContainerScreen<SpecialEnchantmentMenu>
+public final class SpecialEnchantmentScreen extends AbstractContainerScreen<SpecialEnchantmentMenu>
 {
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(
@@ -161,14 +161,18 @@ public final class SpecialEnchantmentScreen
             return false;
         }
 
+        if (this.menu.getMaterialCount() < materialCost)
+        {
+            return false;
+        }
+
         if (minecraft.player.getAbilities().instabuild)
         {
             return true;
         }
 
-        return this.menu.getMaterialCount() >= materialCost
-                && minecraft.player.experienceLevel >= materialCost
-                && minecraft.player.experienceLevel >= requiredLevel;
+        return minecraft.player.experienceLevel >= materialCost
+            && minecraft.player.experienceLevel >= requiredLevel;
     }
 
     @Override

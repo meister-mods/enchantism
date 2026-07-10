@@ -1,5 +1,7 @@
 package io.github.meistermods.enchantism.menu;
 
+import java.util.List;
+
 import io.github.meistermods.enchantism.registry.ModBlocks;
 import io.github.meistermods.enchantism.registry.ModMenus;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -8,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -23,9 +26,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
-import net.minecraft.stats.Stats;
-
-import java.util.List;
 
 public final class SpecialEnchantmentMenu extends AbstractContainerMenu
 {
@@ -240,18 +240,16 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
             return false;
         }
 
-        if (!player.getAbilities().instabuild)
+        if (material.isEmpty() || material.getCount() < materialCost)
         {
-            if (material.isEmpty() || material.getCount() < materialCost)
-            {
-                return false;
-            }
+            return false;
+        }
 
-            if (player.experienceLevel < materialCost
-                    || player.experienceLevel < requiredLevel)
-            {
-                return false;
-            }
+        if (!player.getAbilities().instabuild
+                && (player.experienceLevel < materialCost
+                || player.experienceLevel < requiredLevel))
+        {
+            return false;
         }
 
         this.access.execute((level, tablePos) ->
@@ -298,14 +296,15 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
                 );
             }
 
-            if (!player.getAbilities().instabuild)
-            {
-                material.shrink(materialCost);
+            material.shrink(materialCost);
 
-                if (material.isEmpty())
-                {
-                    this.enchantSlots.setItem(MATERIAL_SLOT, ItemStack.EMPTY);
-                }
+            if (material.isEmpty())
+            {
+                this.enchantSlots.setItem(MATERIAL_SLOT, ItemStack.EMPTY);
+            }
+            else
+            {
+                this.enchantSlots.setChanged();
             }
 
             this.enchantSlots.setChanged();

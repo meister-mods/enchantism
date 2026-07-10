@@ -12,19 +12,19 @@ import net.minecraftforge.registries.RegistryObject;
 public final class ModMenus
 {
     public static final DeferredRegister<MenuType<?>> MENUS =
-            DeferredRegister.create(
-                    ForgeRegistries.MENU_TYPES,
-                    Enchantism.MOD_ID
-            );
+        DeferredRegister.create(
+            ForgeRegistries.MENU_TYPES,
+            Enchantism.MOD_ID
+        );
 
     public static final RegistryObject<MenuType<SpecialEnchantmentMenu>>
-            SPECIAL_ENCHANTMENT = MENUS.register(
-                    "special_enchantment",
-                    () -> new MenuType<>(
-                            SpecialEnchantmentMenu::new,
-                            FeatureFlags.DEFAULT_FLAGS
-                    )
-            );
+        SPECIAL_ENCHANTMENT = MENUS.register(
+            "special_enchantment",
+            () -> new MenuType<>(
+                SpecialEnchantmentMenu::new,
+                FeatureFlags.DEFAULT_FLAGS
+            )
+        );
 
     private ModMenus()
     {
