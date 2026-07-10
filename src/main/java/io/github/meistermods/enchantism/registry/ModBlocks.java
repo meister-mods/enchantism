@@ -7,7 +7,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -41,14 +40,5 @@ public final class ModBlocks
     {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
-        modEventBus.addListener(ModBlocks::addCreativeTabContents);
-    }
-
-    private static void addCreativeTabContents(BuildCreativeModeTabContentsEvent event)
-    {
-        if (event.getTabKey() == net.minecraft.world.item.CreativeModeTabs.FUNCTIONAL_BLOCKS)
-        {
-            event.accept(SPECIAL_ENCHANTMENT_TABLE_ITEM);
-        }
     }
 }

@@ -1,6 +1,7 @@
 package io.github.meistermods.enchantism;
 
 import io.github.meistermods.enchantism.registry.ModBlocks;
+import io.github.meistermods.enchantism.registry.ModCreativeTabs;
 import io.github.meistermods.enchantism.registry.ModMenus;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -17,5 +18,6 @@ public final class Enchantism
 
         ModBlocks.register(modEventBus);
         ModMenus.register(modEventBus);
+        ModCreativeTabs.register(modEventBus);
     }
 }
