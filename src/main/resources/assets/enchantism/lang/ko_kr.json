@@ -1,0 +1,6 @@
+{
+  "block.enchantism.special_enchantment_table": "특수 인챈트 테이블",
+  "container.enchantism.special_enchantment": "특수 인챈트",
+  "container.enchantism.option": "%1$s단계: 레벨 %2$s / 재료 %3$s개",
+  "container.enchantism.no_offer": "인챈트 불가"
+}
