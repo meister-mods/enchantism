@@ -9,10 +9,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 public final class ModEnchantments
 {
     public static final DeferredRegister<Enchantment> ENCHANTMENTS =
-            DeferredRegister.create(
-                    ForgeRegistries.ENCHANTMENTS,
-                    Enchantism.MOD_ID
-            );
+        DeferredRegister.create(
+            ForgeRegistries.ENCHANTMENTS,
+            Enchantism.MOD_ID
+        );
 
     private ModEnchantments()
     {

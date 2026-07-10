@@ -14,8 +14,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
+@SuppressWarnings("null")
 public final class EnchantmentApplicatorMenu
-        extends AbstractContainerMenu
+    extends AbstractContainerMenu
 {
     private static final int MACHINE_SLOT_COUNT = 3;
 
@@ -34,16 +35,16 @@ public final class EnchantmentApplicatorMenu
      * Forge uses this constructor when the menu is opened from the network.
      */
     public EnchantmentApplicatorMenu(
-            int containerId,
-            Inventory inventory,
-            FriendlyByteBuf buffer
+        int containerId,
+        Inventory inventory,
+        FriendlyByteBuf buffer
     )
     {
         this(
-                containerId,
-                inventory,
-                getBlockEntityContainer(inventory, buffer),
-                new SimpleContainerData(2)
+            containerId,
+            inventory,
+            getBlockEntityContainer(inventory, buffer),
+            new SimpleContainerData(2)
         );
     }
 
@@ -58,33 +59,33 @@ public final class EnchantmentApplicatorMenu
     )
     {
         this(
-                containerId,
-                inventory,
-                (Container) blockEntity,
-                data
+            containerId,
+            inventory,
+            (Container) blockEntity,
+            data
         );
     }
 
     private EnchantmentApplicatorMenu(
-            int containerId,
-            Inventory inventory,
-            Container container,
-            ContainerData data
+        int containerId,
+        Inventory inventory,
+        Container container,
+        ContainerData data
     )
     {
         super(
-                ModMenus.ENCHANTMENT_APPLICATOR.get(),
-                containerId
+            ModMenus.ENCHANTMENT_APPLICATOR.get(),
+            containerId
         );
 
         checkContainerSize(
-                container,
-                MACHINE_SLOT_COUNT
+            container,
+            MACHINE_SLOT_COUNT
         );
 
         checkContainerDataCount(
-                data,
-                2
+            data,
+            2
         );
 
         this.container = container;
@@ -105,63 +106,63 @@ public final class EnchantmentApplicatorMenu
          * Book input.
          */
         this.addSlot(
-                new Slot(
-                        this.container,
-                        EnchantmentApplicatorBlockEntity.BOOK_SLOT,
-                        56,
-                        35
-                )
+            new Slot(
+                this.container,
+                EnchantmentApplicatorBlockEntity.BOOK_SLOT,
+                56,
+                17
+            )
+            {
+                @Override
+                public boolean mayPlace(ItemStack stack)
                 {
-                    @Override
-                    public boolean mayPlace(ItemStack stack)
-                    {
-                        return stack.is(Items.BOOK);
-                    }
-
-                    @Override
-                    public int getMaxStackSize()
-                    {
-                        return 64;
-                    }
+                    return stack.is(Items.BOOK);
                 }
+
+                @Override
+                public int getMaxStackSize()
+                {
+                    return 64;
+                }
+            }
         );
 
         /*
          * Material input.
          */
         this.addSlot(
-                new Slot(
-                        this.container,
-                        EnchantmentApplicatorBlockEntity.MATERIAL_SLOT,
-                        56,
-                        53
-                )
+            new Slot(
+                this.container,
+                EnchantmentApplicatorBlockEntity.MATERIAL_SLOT,
+                56,
+                53
+            )
+            {
+                @Override
+                public boolean mayPlace(ItemStack stack)
                 {
-                    @Override
-                    public boolean mayPlace(ItemStack stack)
-                    {
-                        return !stack.isEmpty();
-                    }
+                    return !stack.isEmpty();
                 }
+            }
         );
 
         /*
          * Enchanted-book output.
          */
         this.addSlot(
-                new Slot(
-                        this.container,
-                        EnchantmentApplicatorBlockEntity.OUTPUT_SLOT,
-                        116,
-                        44
-                )
+            new Slot(
+                this.container,
+                EnchantmentApplicatorBlockEntity.OUTPUT_SLOT,
+                116,
+                35
+            )
+            {
+                @Override
+                public boolean mayPlace(ItemStack stack)
                 {
-                    @Override
-                    public boolean mayPlace(ItemStack stack)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
+            }
         );
     }
 
@@ -172,12 +173,12 @@ public final class EnchantmentApplicatorMenu
             for (int column = 0; column < 9; column++)
             {
                 this.addSlot(
-                        new Slot(
-                                inventory,
-                                column + row * 9 + 9,
-                                8 + column * 18,
-                                84 + row * 18
-                        )
+                    new Slot(
+                        inventory,
+                        column + row * 9 + 9,
+                        8 + column * 18,
+                        84 + row * 18
+                    )
                 );
             }
         }
@@ -188,19 +189,19 @@ public final class EnchantmentApplicatorMenu
         for (int column = 0; column < 9; column++)
         {
             this.addSlot(
-                    new Slot(
-                            inventory,
-                            column,
-                            8 + column * 18,
-                            142
-                    )
+                new Slot(
+                    inventory,
+                    column,
+                    8 + column * 18,
+                    142
+                )
             );
         }
     }
 
     private static Container getBlockEntityContainer(
-            Inventory inventory,
-            FriendlyByteBuf buffer
+        Inventory inventory,
+        FriendlyByteBuf buffer
     )
     {
         if (buffer == null)
@@ -210,11 +211,11 @@ public final class EnchantmentApplicatorMenu
 
         var blockPos = buffer.readBlockPos();
         var blockEntity = inventory.player
-                .level()
-                .getBlockEntity(blockPos);
+            .level()
+            .getBlockEntity(blockPos);
 
         if (blockEntity
-                instanceof EnchantmentApplicatorBlockEntity applicator)
+            instanceof EnchantmentApplicatorBlockEntity applicator)
         {
             return applicator;
         }
@@ -258,8 +259,8 @@ public final class EnchantmentApplicatorMenu
 
     @Override
     public ItemStack quickMoveStack(
-            Player player,
-            int index
+        Player player,
+        int index
     )
     {
         ItemStack copiedStack = ItemStack.EMPTY;
@@ -279,10 +280,10 @@ public final class EnchantmentApplicatorMenu
         if (index < MACHINE_SLOT_COUNT)
         {
             if (!this.moveItemStackTo(
-                    sourceStack,
-                    PLAYER_INVENTORY_START,
-                    HOTBAR_END,
-                    true
+                sourceStack,
+                PLAYER_INVENTORY_START,
+                HOTBAR_END,
+                true
             ))
             {
                 return ItemStack.EMPTY;
@@ -294,10 +295,10 @@ public final class EnchantmentApplicatorMenu
         else if (sourceStack.is(Items.BOOK))
         {
             if (!this.moveItemStackTo(
-                    sourceStack,
-                    EnchantmentApplicatorBlockEntity.BOOK_SLOT,
-                    EnchantmentApplicatorBlockEntity.BOOK_SLOT + 1,
-                    false
+                sourceStack,
+                EnchantmentApplicatorBlockEntity.BOOK_SLOT,
+                EnchantmentApplicatorBlockEntity.BOOK_SLOT + 1,
+                false
             ))
             {
                 return ItemStack.EMPTY;
@@ -309,33 +310,33 @@ public final class EnchantmentApplicatorMenu
         else
         {
             if (!this.moveItemStackTo(
-                    sourceStack,
-                    EnchantmentApplicatorBlockEntity.MATERIAL_SLOT,
-                    EnchantmentApplicatorBlockEntity.MATERIAL_SLOT + 1,
-                    false
+                sourceStack,
+                EnchantmentApplicatorBlockEntity.MATERIAL_SLOT,
+                EnchantmentApplicatorBlockEntity.MATERIAL_SLOT + 1,
+                false
             ))
             {
                 if (index >= PLAYER_INVENTORY_START
-                        && index < PLAYER_INVENTORY_END)
+                    && index < PLAYER_INVENTORY_END)
                 {
                     if (!this.moveItemStackTo(
-                            sourceStack,
-                            HOTBAR_START,
-                            HOTBAR_END,
-                            false
+                        sourceStack,
+                        HOTBAR_START,
+                        HOTBAR_END,
+                        false
                     ))
                     {
                         return ItemStack.EMPTY;
                     }
                 }
                 else if (index >= HOTBAR_START
-                        && index < HOTBAR_END)
+                    && index < HOTBAR_END)
                 {
                     if (!this.moveItemStackTo(
-                            sourceStack,
-                            PLAYER_INVENTORY_START,
-                            PLAYER_INVENTORY_END,
-                            false
+                        sourceStack,
+                        PLAYER_INVENTORY_START,
+                        PLAYER_INVENTORY_END,
+                        false
                     ))
                     {
                         return ItemStack.EMPTY;
@@ -363,8 +364,8 @@ public final class EnchantmentApplicatorMenu
         }
 
         sourceSlot.onTake(
-                player,
-                sourceStack
+            player,
+            sourceStack
         );
 
         return copiedStack;

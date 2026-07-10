@@ -17,9 +17,9 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 public abstract class SpecialEnchantment extends Enchantment
 {
     protected SpecialEnchantment(
-            Rarity rarity,
-            EnchantmentCategory category,
-            EquipmentSlot... applicableSlots
+        Rarity rarity,
+        EnchantmentCategory category,
+        EquipmentSlot... applicableSlots
     )
     {
         super(rarity, category, applicableSlots);

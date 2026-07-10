@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "particle": "minecraft:block/obsidian",
+    "top": "minecraft:block/enchanting_table_top",
+    "front": "minecraft:block/enchanting_table_side",
+    "side": "minecraft:block/obsidian"
+  }
+}

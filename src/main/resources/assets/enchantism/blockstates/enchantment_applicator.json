@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "enchantism:block/enchantment_applicator"
+    },
+    "facing=east": {
+      "model": "enchantism:block/enchantment_applicator",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "enchantism:block/enchantment_applicator",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "enchantism:block/enchantment_applicator",
+      "y": 270
+    }
+  }
+}

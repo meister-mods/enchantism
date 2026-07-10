@@ -3,8 +3,6 @@ package io.github.meistermods.enchantism.blockentity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.Nullable;
-
 import io.github.meistermods.enchantism.enchantment.SpecialEnchantment;
 import io.github.meistermods.enchantism.menu.EnchantmentApplicatorMenu;
 import io.github.meistermods.enchantism.registry.ModBlockEntities;
@@ -30,9 +28,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final class EnchantmentApplicatorBlockEntity
-        extends BlockEntity
-        implements MenuProvider, Container
+@SuppressWarnings("null")
+public final class EnchantmentApplicatorBlockEntity extends BlockEntity implements MenuProvider, Container
 {
     public static final int BOOK_SLOT = 0;
     public static final int MATERIAL_SLOT = 1;
@@ -42,7 +39,7 @@ public final class EnchantmentApplicatorBlockEntity
     public static final int DEFAULT_PROCESS_TIME = 200;
 
     private final NonNullList<ItemStack> items =
-            NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
+        NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
     private int progress;
     private int maxProgress = DEFAULT_PROCESS_TIME;
@@ -81,22 +78,22 @@ public final class EnchantmentApplicatorBlockEntity
     };
 
     public EnchantmentApplicatorBlockEntity(
-            BlockPos pos,
-            BlockState state
+        BlockPos pos,
+        BlockState state
     )
     {
         super(
-                ModBlockEntities.ENCHANTMENT_APPLICATOR.get(),
-                pos,
-                state
+            ModBlockEntities.ENCHANTMENT_APPLICATOR.get(),
+            pos,
+            state
         );
     }
 
     public static void serverTick(
-            Level level,
-            BlockPos pos,
-            BlockState state,
-            EnchantmentApplicatorBlockEntity blockEntity
+        Level level,
+        BlockPos pos,
+        BlockState state,
+        EnchantmentApplicatorBlockEntity blockEntity
     )
     {
         if (!blockEntity.canProcess())
@@ -161,22 +158,22 @@ public final class EnchantmentApplicatorBlockEntity
         }
 
         Enchantment selected = candidates.get(
-                this.level.random.nextInt(candidates.size())
+            this.level.random.nextInt(candidates.size())
         );
 
         int selectedLevel = getGrantedLevel(
-                selected,
-                material
+            selected,
+            material
         );
 
         ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
 
         EnchantedBookItem.addEnchantment(
-                result,
-                new EnchantmentInstance(
-                        selected,
-                        selectedLevel
-                )
+            result,
+            new EnchantmentInstance(
+                selected,
+                selectedLevel
+            )
         );
 
         this.items.get(BOOK_SLOT).shrink(1);
@@ -212,7 +209,7 @@ public final class EnchantmentApplicatorBlockEntity
             if (enchantment instanceof SpecialEnchantment special)
             {
                 if (special.matchesMaterial(material)
-                        && special.isAllowedOnBooks())
+                    && special.isAllowedOnBooks())
                 {
                     candidates.add(special);
                 }
@@ -221,7 +218,7 @@ public final class EnchantmentApplicatorBlockEntity
             }
 
             if (enchantment.isDiscoverable()
-                    && enchantment.isAllowedOnBooks())
+                && enchantment.isAllowedOnBooks())
             {
                 candidates.add(enchantment);
             }
@@ -231,21 +228,21 @@ public final class EnchantmentApplicatorBlockEntity
     }
 
     private int getGrantedLevel(
-            Enchantment enchantment,
-            ItemStack material
+        Enchantment enchantment,
+        ItemStack material
     )
     {
         if (enchantment instanceof SpecialEnchantment special)
         {
             int requestedLevel =
-                    special.getGrantedLevel(material);
+                special.getGrantedLevel(material);
 
             return Math.max(
-                    special.getMinLevel(),
-                    Math.min(
-                            requestedLevel,
-                            special.getMaxLevel()
-                    )
+                special.getMinLevel(),
+                Math.min(
+                    requestedLevel,
+                    special.getMaxLevel()
+                )
             );
         }
 
@@ -258,9 +255,9 @@ public final class EnchantmentApplicatorBlockEntity
         }
 
         return minLevel
-                + this.level.random.nextInt(
-                        maxLevel - minLevel + 1
-                );
+            + this.level.random.nextInt(
+                maxLevel - minLevel + 1
+            );
     }
 
     public int getProgress()
@@ -286,9 +283,9 @@ public final class EnchantmentApplicatorBlockEntity
         }
 
         Containers.dropContents(
-                this.level,
-                this.worldPosition,
-                this
+            this.level,
+            this.worldPosition,
+            this
         );
     }
 
@@ -296,28 +293,29 @@ public final class EnchantmentApplicatorBlockEntity
     public Component getDisplayName()
     {
         return Component.translatable(
-                "container.enchantism.enchantment_applicator"
+            "container.enchantism.enchantment_applicator"
         );
     }
 
     @Override
-    @Nullable
     public AbstractContainerMenu createMenu(
-            int containerId,
-            Inventory inventory,
-            Player player
+        int containerId,
+        Inventory inventory,
+        Player player
     )
     {
         return new EnchantmentApplicatorMenu(
-                containerId,
-                inventory,
-                this,
-                this.data
+            containerId,
+            inventory,
+            this,
+            this.data
         );
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag)
+    protected void saveAdditional(
+        CompoundTag tag
+    )
     {
         super.saveAdditional(tag);
 
@@ -325,8 +323,8 @@ public final class EnchantmentApplicatorBlockEntity
         tag.putInt("MaxProgress", this.maxProgress);
 
         ContainerHelper.saveAllItems(
-                tag,
-                this.items
+            tag,
+            this.items
         );
     }
 
@@ -338,12 +336,12 @@ public final class EnchantmentApplicatorBlockEntity
         this.progress = tag.getInt("Progress");
 
         this.maxProgress = tag.contains("MaxProgress")
-                ? tag.getInt("MaxProgress")
-                : DEFAULT_PROCESS_TIME;
+            ? tag.getInt("MaxProgress")
+            : DEFAULT_PROCESS_TIME;
 
         ContainerHelper.loadAllItems(
-                tag,
-                this.items
+            tag,
+            this.items
         );
     }
 
@@ -380,9 +378,9 @@ public final class EnchantmentApplicatorBlockEntity
     )
     {
         ItemStack result = ContainerHelper.removeItem(
-                this.items,
-                slot,
-                amount
+            this.items,
+            slot,
+            amount
         );
 
         if (!result.isEmpty())
@@ -397,8 +395,8 @@ public final class EnchantmentApplicatorBlockEntity
     public ItemStack removeItemNoUpdate(int slot)
     {
         return ContainerHelper.takeItem(
-                this.items,
-                slot
+            this.items,
+            slot
         );
     }
 
@@ -432,9 +430,9 @@ public final class EnchantmentApplicatorBlockEntity
         }
 
         return player.distanceToSqr(
-                this.worldPosition.getX() + 0.5D,
-                this.worldPosition.getY() + 0.5D,
-                this.worldPosition.getZ() + 0.5D
+            this.worldPosition.getX() + 0.5D,
+            this.worldPosition.getY() + 0.5D,
+            this.worldPosition.getZ() + 0.5D
         ) <= 64.0D;
     }
 

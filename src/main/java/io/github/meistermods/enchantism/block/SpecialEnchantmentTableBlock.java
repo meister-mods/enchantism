@@ -1,7 +1,5 @@
 package io.github.meistermods.enchantism.block;
 
-import org.jetbrains.annotations.Nullable;
-
 import io.github.meistermods.enchantism.menu.SpecialEnchantmentMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -13,13 +11,11 @@ import net.minecraft.world.level.block.EnchantmentTableBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-public final class SpecialEnchantmentTableBlock
-        extends EnchantmentTableBlock
+@SuppressWarnings("null")
+public final class SpecialEnchantmentTableBlock extends EnchantmentTableBlock
 {
     private static final Component CONTAINER_TITLE =
-            Component.translatable(
-                    "container.enchantism.special_enchantment"
-            );
+        Component.translatable("container.enchantism.special_enchantment");
 
     public SpecialEnchantmentTableBlock(Properties properties)
     {
@@ -28,39 +24,32 @@ public final class SpecialEnchantmentTableBlock
 
     @Override
     public MenuProvider getMenuProvider(
-            BlockState state,
-            Level level,
-            BlockPos pos
+        BlockState state,
+        Level level,
+        BlockPos pos
     )
     {
+        ContainerLevelAccess access = ContainerLevelAccess.create(level, pos);
+
         return new SimpleMenuProvider(
-                (containerId, inventory, player) ->
-                        new SpecialEnchantmentMenu(
-                                containerId,
-                                inventory,
-                                ContainerLevelAccess.create(
-                                        level,
-                                        pos
-                                )
-                        ),
-                CONTAINER_TITLE
+            (containerId, inventory, player) ->
+                new SpecialEnchantmentMenu(
+                    containerId,
+                    inventory,
+                    access
+                ),
+            CONTAINER_TITLE
         );
     }
 
     /**
-     * Vanilla's EnchantmentTableBlockEntity is registered only for the
-     * vanilla enchanting-table block. Returning null avoids attaching an
-     * invalid vanilla block entity to this custom block.
-     *
-     * The table model, particles, bookshelf checks and menu still work.
-     * The animated floating book is omitted until a custom block entity
-     * and renderer are added.
+     * This block does not currently use an enchantment-table block entity.
+     * Therefore, the floating-book animation is not rendered.
      */
     @Override
-    @Nullable
     public BlockEntity newBlockEntity(
-            BlockPos pos,
-            BlockState state
+        BlockPos pos,
+        BlockState state
     )
     {
         return null;

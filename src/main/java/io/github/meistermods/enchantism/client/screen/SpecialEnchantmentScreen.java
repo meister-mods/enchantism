@@ -10,13 +10,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+@SuppressWarnings("null")
 public final class SpecialEnchantmentScreen extends AbstractContainerScreen<SpecialEnchantmentMenu>
 {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation(
-                    "minecraft",
-                    "textures/gui/container/enchanting_table.png"
-            );
+        new ResourceLocation(
+            "minecraft",
+            "textures/gui/container/enchanting_table.png"
+        );
 
     private static final int OPTION_X = 60;
     private static final int OPTION_Y = 14;
@@ -24,9 +25,9 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
     private static final int OPTION_HEIGHT = 19;
 
     public SpecialEnchantmentScreen(
-            SpecialEnchantmentMenu menu,
-            Inventory inventory,
-            Component title
+        SpecialEnchantmentMenu menu,
+        Inventory inventory,
+        Component title
     )
     {
         super(menu, inventory, title);
@@ -42,10 +43,10 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
 
     @Override
     public void render(
-            GuiGraphics graphics,
-            int mouseX,
-            int mouseY,
-            float partialTick
+        GuiGraphics graphics,
+        int mouseX,
+        int mouseY,
+        float partialTick
     )
     {
         this.renderBackground(graphics);
@@ -55,22 +56,22 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
 
     @Override
     protected void renderBg(
-            GuiGraphics graphics,
-            float partialTick,
-            int mouseX,
-            int mouseY
+        GuiGraphics graphics,
+        float partialTick,
+        int mouseX,
+        int mouseY
     )
     {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         graphics.blit(
-                TEXTURE,
-                this.leftPos,
-                this.topPos,
-                0,
-                0,
-                this.imageWidth,
-                this.imageHeight
+            TEXTURE,
+            this.leftPos,
+            this.topPos,
+            0,
+            0,
+            this.imageWidth,
+            this.imageHeight
         );
 
         for (int option = 0; option < 3; option++)
@@ -80,10 +81,10 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
     }
 
     private void renderOption(
-            GuiGraphics graphics,
-            int option,
-            int mouseX,
-            int mouseY
+        GuiGraphics graphics,
+        int option,
+        int mouseX,
+        int mouseY
     )
     {
         int x = this.leftPos + OPTION_X;
@@ -92,9 +93,9 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
         int materialCost = option + 1;
 
         boolean hovered = mouseX >= x
-                && mouseX < x + OPTION_WIDTH
-                && mouseY >= y
-                && mouseY < y + OPTION_HEIGHT;
+            && mouseX < x + OPTION_WIDTH
+            && mouseY >= y
+            && mouseY < y + OPTION_HEIGHT;
 
         boolean usable = canUseOption(option);
 
@@ -114,33 +115,33 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
         }
 
         graphics.fill(
-                x,
-                y,
-                x + OPTION_WIDTH,
-                y + OPTION_HEIGHT - 1,
-                backgroundColor
+            x,
+            y,
+            x + OPTION_WIDTH,
+            y + OPTION_HEIGHT - 1,
+            backgroundColor
         );
 
         Component optionText = requiredLevel <= 0
-                ? Component.translatable(
-                        "container.enchantism.no_offer"
-                )
-                : Component.translatable(
-                        "container.enchantism.option",
-                        option + 1,
-                        requiredLevel,
-                        materialCost
-                );
+            ? Component.translatable(
+                "container.enchantism.no_offer"
+            )
+            : Component.translatable(
+                "container.enchantism.option",
+                option + 1,
+                requiredLevel,
+                materialCost
+            );
 
         int textColor = usable ? 0xFFFFFF : 0xB0B0B0;
 
         graphics.drawString(
-                this.font,
-                optionText,
-                x + 5,
-                y + 5,
-                textColor,
-                false
+            this.font,
+            optionText,
+            x + 5,
+            y + 5,
+            textColor,
+            false
         );
     }
 
@@ -177,9 +178,9 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
 
     @Override
     public boolean mouseClicked(
-            double mouseX,
-            double mouseY,
-            int button
+        double mouseX,
+        double mouseY,
+        int button
     )
     {
         for (int option = 0; option < 3; option++)
@@ -188,23 +189,23 @@ public final class SpecialEnchantmentScreen extends AbstractContainerScreen<Spec
             int y = this.topPos + OPTION_Y + option * OPTION_HEIGHT;
 
             if (mouseX >= x
-                    && mouseX < x + OPTION_WIDTH
-                    && mouseY >= y
-                    && mouseY < y + OPTION_HEIGHT
-                    && canUseOption(option))
+                && mouseX < x + OPTION_WIDTH
+                && mouseY >= y
+                && mouseY < y + OPTION_HEIGHT
+                && canUseOption(option))
             {
                 if (this.minecraft != null
-                        && this.minecraft.gameMode != null
-                        && this.minecraft.player != null)
+                    && this.minecraft.gameMode != null
+                    && this.minecraft.player != null)
                 {
                     this.minecraft.gameMode.handleInventoryButtonClick(
-                            this.menu.containerId,
-                            option
+                        this.menu.containerId,
+                        option
                     );
 
                     this.menu.clickMenuButton(
-                            this.minecraft.player,
-                            option
+                        this.minecraft.player,
+                        option
                     );
 
                     return true;

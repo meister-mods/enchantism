@@ -1,6 +1,7 @@
 package io.github.meistermods.enchantism.client;
 
 import io.github.meistermods.enchantism.Enchantism;
+import io.github.meistermods.enchantism.client.screen.EnchantmentApplicatorScreen;
 import io.github.meistermods.enchantism.client.screen.SpecialEnchantmentScreen;
 import io.github.meistermods.enchantism.registry.ModMenus;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -9,6 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
+@SuppressWarnings("null")
 @Mod.EventBusSubscriber(
         modid = Enchantism.MOD_ID,
         bus = Mod.EventBusSubscriber.Bus.MOD,
@@ -21,13 +23,21 @@ public final class ClientModEvents
     }
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent event)
+    public static void onClientSetup(
+        FMLClientSetupEvent event
+    )
     {
         event.enqueueWork(() ->
-                MenuScreens.register(
-                        ModMenus.SPECIAL_ENCHANTMENT.get(),
-                        SpecialEnchantmentScreen::new
-                )
-        );
+        {
+            MenuScreens.register(
+                ModMenus.SPECIAL_ENCHANTMENT.get(),
+                SpecialEnchantmentScreen::new
+            );
+
+            MenuScreens.register(
+                ModMenus.ENCHANTMENT_APPLICATOR.get(),
+                EnchantmentApplicatorScreen::new
+            );
+        });
     }
 }

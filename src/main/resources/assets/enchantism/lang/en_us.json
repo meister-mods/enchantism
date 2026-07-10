@@ -1,8 +1,12 @@
 {
   "block.enchantism.special_enchantment_table": "Special Enchantment Table",
   "container.enchantism.special_enchantment": "Special Enchantment",
+
+  "block.enchantism.enchantment_applicator": "Enchantment Applicator",
+  "container.enchantism.enchantment_applicator": "Enchantment Applicator",
+
   "container.enchantism.option": "Option %1$s: Level %2$s / %3$s material",
   "container.enchantism.no_offer": "No enchantment",
-  "container.enchantism.special_enchantment": "Special Enchantment",
+  
   "itemGroup.enchantism": "Enchantism"
 }

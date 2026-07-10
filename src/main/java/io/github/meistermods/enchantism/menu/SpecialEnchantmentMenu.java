@@ -27,6 +27,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
 
+@SuppressWarnings("null")
 public final class SpecialEnchantmentMenu extends AbstractContainerMenu
 {
     private static final int TARGET_SLOT = 0;
@@ -60,9 +61,9 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
     }
 
     public SpecialEnchantmentMenu(
-            int containerId,
-            Inventory inventory,
-            ContainerLevelAccess access
+        int containerId,
+        Inventory inventory,
+        ContainerLevelAccess access
     )
     {
         super(ModMenus.SPECIAL_ENCHANTMENT.get(), containerId);
@@ -95,10 +96,10 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
             for (int column = 0; column < 9; column++)
             {
                 this.addSlot(new Slot(
-                        inventory,
-                        column + row * 9 + 9,
-                        8 + column * 18,
-                        84 + row * 18
+                    inventory,
+                    column + row * 9 + 9,
+                    8 + column * 18,
+                    84 + row * 18
                 ));
             }
         }
@@ -107,10 +108,10 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
         for (int column = 0; column < 9; column++)
         {
             this.addSlot(new Slot(
-                    inventory,
-                    column,
-                    8 + column * 18,
-                    142
+                inventory,
+                column,
+                8 + column * 18,
+                142
             ));
         }
 
@@ -158,7 +159,7 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
                 {
                     BlockPos shelfPos = tablePos.offset(offset);
                     enchantmentPower += level.getBlockState(shelfPos)
-                            .getEnchantPowerBonus(level, shelfPos);
+                        .getEnchantPowerBonus(level, shelfPos);
                 }
             }
 
@@ -167,10 +168,10 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
             for (int option = 0; option < 3; option++)
             {
                 this.costs[option] = EnchantmentHelper.getEnchantmentCost(
-                        this.random,
-                        option,
-                        (int) enchantmentPower,
-                        target
+                    this.random,
+                    option,
+                    (int) enchantmentPower,
+                    target
                 );
 
                 this.enchantClue[option] = -1;
@@ -190,18 +191,18 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
                 }
 
                 List<EnchantmentInstance> offers = getEnchantmentList(
-                        target,
-                        option,
-                        this.costs[option]
+                    target,
+                    option,
+                    this.costs[option]
                 );
 
                 if (!offers.isEmpty())
                 {
                     EnchantmentInstance clue =
-                            offers.get(this.random.nextInt(offers.size()));
+                        offers.get(this.random.nextInt(offers.size()));
 
                     this.enchantClue[option] =
-                            BuiltInRegistries.ENCHANTMENT.getId(clue.enchantment);
+                        BuiltInRegistries.ENCHANTMENT.getId(clue.enchantment);
                     this.levelClue[option] = clue.level;
                 }
             }
@@ -246,8 +247,8 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
         }
 
         if (!player.getAbilities().instabuild
-                && (player.experienceLevel < materialCost
-                || player.experienceLevel < requiredLevel))
+            && (player.experienceLevel < materialCost
+            || player.experienceLevel < requiredLevel))
         {
             return false;
         }
@@ -255,7 +256,7 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
         this.access.execute((level, tablePos) ->
         {
             List<EnchantmentInstance> offers =
-                    getEnchantmentList(target, option, requiredLevel);
+                getEnchantmentList(target, option, requiredLevel);
 
             if (offers.isEmpty())
             {
@@ -290,9 +291,9 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
             if (player instanceof ServerPlayer serverPlayer)
             {
                 CriteriaTriggers.ENCHANTED_ITEM.trigger(
-                        serverPlayer,
-                        enchantedTarget,
-                        materialCost
+                    serverPlayer,
+                    enchantedTarget,
+                    materialCost
                 );
             }
 
@@ -312,12 +313,12 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
             this.slotsChanged(this.enchantSlots);
 
             level.playSound(
-                    null,
-                    tablePos,
-                    SoundEvents.ENCHANTMENT_TABLE_USE,
-                    SoundSource.BLOCKS,
-                    1.0F,
-                    level.random.nextFloat() * 0.1F + 0.9F
+                null,
+                tablePos,
+                SoundEvents.ENCHANTMENT_TABLE_USE,
+                SoundSource.BLOCKS,
+                1.0F,
+                level.random.nextFloat() * 0.1F + 0.9F
             );
         });
 
@@ -325,20 +326,20 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
     }
 
     private List<EnchantmentInstance> getEnchantmentList(
-            ItemStack target,
-            int option,
-            int level
+        ItemStack target,
+        int option,
+        int level
     )
     {
         this.random.setSeed(this.enchantmentSeed.get() + option);
 
         List<EnchantmentInstance> offers =
-                EnchantmentHelper.selectEnchantment(
-                        this.random,
-                        target,
-                        level,
-                        false
-                );
+            EnchantmentHelper.selectEnchantment(
+                this.random,
+                target,
+                level,
+                false
+            );
 
         // Vanilla removes one random result when enchanting a normal book.
         if (target.is(Items.BOOK) && offers.size() > 1)
@@ -365,16 +366,16 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
     {
         super.removed(player);
         this.access.execute((level, pos) ->
-                this.clearContainer(player, this.enchantSlots));
+            this.clearContainer(player, this.enchantSlots));
     }
 
     @Override
     public boolean stillValid(Player player)
     {
         return stillValid(
-                this.access,
-                player,
-                ModBlocks.SPECIAL_ENCHANTMENT_TABLE.get()
+            this.access,
+            player,
+            ModBlocks.SPECIAL_ENCHANTMENT_TABLE.get()
         );
     }
 
@@ -395,23 +396,23 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
         if (index == TARGET_SLOT || index == MATERIAL_SLOT)
         {
             if (!this.moveItemStackTo(
-                    source,
-                    PLAYER_INVENTORY_START,
-                    HOTBAR_END,
-                    true
+                source,
+                PLAYER_INVENTORY_START,
+                HOTBAR_END,
+                true
             ))
             {
                 return ItemStack.EMPTY;
             }
         }
         else if (source.isEnchantable()
-                && !this.slots.get(TARGET_SLOT).hasItem())
+            && !this.slots.get(TARGET_SLOT).hasItem())
         {
             if (!this.moveItemStackTo(
-                    source,
-                    TARGET_SLOT,
-                    TARGET_SLOT + 1,
-                    false
+                source,
+                TARGET_SLOT,
+                TARGET_SLOT + 1,
+                false
             ))
             {
                 return ItemStack.EMPTY;
@@ -420,23 +421,23 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
         else if (!this.slots.get(MATERIAL_SLOT).hasItem())
         {
             if (!this.moveItemStackTo(
-                    source,
-                    MATERIAL_SLOT,
-                    MATERIAL_SLOT + 1,
-                    false
+                source,
+                MATERIAL_SLOT,
+                MATERIAL_SLOT + 1,
+                false
             ))
             {
                 return ItemStack.EMPTY;
             }
         }
         else if (index >= PLAYER_INVENTORY_START
-                && index < PLAYER_INVENTORY_END)
+            && index < PLAYER_INVENTORY_END)
         {
             if (!this.moveItemStackTo(
-                    source,
-                    HOTBAR_START,
-                    HOTBAR_END,
-                    false
+                source,
+                HOTBAR_START,
+                HOTBAR_END,
+                false
             ))
             {
                 return ItemStack.EMPTY;
@@ -445,10 +446,10 @@ public final class SpecialEnchantmentMenu extends AbstractContainerMenu
         else if (index >= HOTBAR_START && index < HOTBAR_END)
         {
             if (!this.moveItemStackTo(
-                    source,
-                    PLAYER_INVENTORY_START,
-                    PLAYER_INVENTORY_END,
-                    false
+                source,
+                PLAYER_INVENTORY_START,
+                PLAYER_INVENTORY_END,
+                false
             ))
             {
                 return ItemStack.EMPTY;

@@ -11,6 +11,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+@SuppressWarnings("null")
 public final class ModMenus
 {
     public static final DeferredRegister<MenuType<?>> MENUS =
@@ -31,10 +32,10 @@ public final class ModMenus
     public static final RegistryObject<MenuType<EnchantmentApplicatorMenu>>
         ENCHANTMENT_APPLICATOR =
         MENUS.register(
-                "enchantment_applicator",
-                () -> IForgeMenuType.create(
-                        EnchantmentApplicatorMenu::new
-                )
+            "enchantment_applicator",
+            () -> IForgeMenuType.create(
+                EnchantmentApplicatorMenu::new
+            )
         );
 
     private ModMenus()
