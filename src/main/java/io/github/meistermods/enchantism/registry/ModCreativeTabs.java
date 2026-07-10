@@ -31,7 +31,11 @@ public final class ModCreativeTabs
                 .displayItems((parameters, output) ->
                 {
                     output.accept(
-                        ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get()
+                            ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get()
+                    );
+
+                    output.accept(
+                            ModBlocks.ENCHANTMENT_APPLICATOR_ITEM.get()
                     );
                 })
                 .build()

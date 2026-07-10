@@ -1,9 +1,11 @@
 package io.github.meistermods.enchantism.registry;
 
 import io.github.meistermods.enchantism.Enchantism;
+import io.github.meistermods.enchantism.menu.EnchantmentApplicatorMenu;
 import io.github.meistermods.enchantism.menu.SpecialEnchantmentMenu;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -24,6 +26,15 @@ public final class ModMenus
                 SpecialEnchantmentMenu::new,
                 FeatureFlags.DEFAULT_FLAGS
             )
+        );
+
+    public static final RegistryObject<MenuType<EnchantmentApplicatorMenu>>
+        ENCHANTMENT_APPLICATOR =
+        MENUS.register(
+                "enchantment_applicator",
+                () -> IForgeMenuType.create(
+                        EnchantmentApplicatorMenu::new
+                )
         );
 
     private ModMenus()
