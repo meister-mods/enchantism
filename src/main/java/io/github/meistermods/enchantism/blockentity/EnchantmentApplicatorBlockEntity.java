@@ -28,7 +28,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-@SuppressWarnings("null")
+@SuppressWarnings({"null", "deprecation"})
 public final class EnchantmentApplicatorBlockEntity extends BlockEntity implements MenuProvider, Container
 {
     public static final int BOOK_SLOT = 0;

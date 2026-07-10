@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 public final class EnchantmentApplicatorScreen extends AbstractContainerScreen<EnchantmentApplicatorMenu>
 {
     private static final ResourceLocation TEXTURE =
-        new ResourceLocation(
+        ResourceLocation.fromNamespaceAndPath(
             "minecraft",
             "textures/gui/container/furnace.png"
         );

@@ -27,7 +27,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.block.EnchantmentTableBlock;
 
-@SuppressWarnings("null")
+@SuppressWarnings({"null", "deprecation"})
 public final class SpecialEnchantmentMenu extends AbstractContainerMenu
 {
     private static final int TARGET_SLOT = 0;

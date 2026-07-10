@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 
-@SuppressWarnings("null")
+@SuppressWarnings({"null", "deprecation"})
 public final class EnchantmentApplicatorBlock extends BaseEntityBlock
 {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
