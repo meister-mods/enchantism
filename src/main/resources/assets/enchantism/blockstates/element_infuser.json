@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "enchantism:block/element_infuser"
+    },
+    "facing=east": {
+      "model": "enchantism:block/element_infuser",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "enchantism:block/element_infuser",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "enchantism:block/element_infuser",
+      "y": 270
+    }
+  }
+}

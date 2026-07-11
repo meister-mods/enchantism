@@ -1,11 +1,17 @@
 {
   "block.enchantism.special_enchantment_table": "Special Enchantment Table",
   "container.enchantism.special_enchantment": "Special Enchantment",
-
   "block.enchantism.enchantment_applicator": "Enchantment Applicator",
   "container.enchantism.enchantment_applicator": "Enchantment Applicator",
+  "block.enchantism.element_infuser": "Element Infusion Table",
+  "container.enchantism.element_infuser": "Element Infusion Table",
 
   "block.enchantism.compressed_cobblestone": "Compressed Cobblestone",
+
+  "element.enchantism.empty": "Empty",
+  "element.enchantism.stone": "Stone",
+  "element.enchantism.wood": "Wood",
+  "element.enchantism.dust": "Dust",
 
   "container.enchantism.option": "Option %1$s: Level %2$s / %3$s material",
   "container.enchantism.no_offer": "No enchantment",

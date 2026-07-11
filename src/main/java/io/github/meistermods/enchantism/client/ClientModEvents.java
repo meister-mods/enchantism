@@ -1,6 +1,7 @@
 package io.github.meistermods.enchantism.client;
 
 import io.github.meistermods.enchantism.Enchantism;
+import io.github.meistermods.enchantism.client.screen.ElementInfuserScreen;
 import io.github.meistermods.enchantism.client.screen.EnchantmentApplicatorScreen;
 import io.github.meistermods.enchantism.client.screen.SpecialEnchantmentScreen;
 import io.github.meistermods.enchantism.registry.ModMenus;
@@ -38,6 +39,12 @@ public final class ClientModEvents
                 ModMenus.ENCHANTMENT_APPLICATOR.get(),
                 EnchantmentApplicatorScreen::new
             );
+            
+            MenuScreens.register(
+                    ModMenus.ELEMENT_INFUSER.get(),
+                    ElementInfuserScreen::new
+            );
         });
     }
+    
 }

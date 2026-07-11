@@ -1,6 +1,7 @@
 package io.github.meistermods.enchantism.registry;
 
 import io.github.meistermods.enchantism.Enchantism;
+import io.github.meistermods.enchantism.blockentity.ElementInfuserBlockEntity;
 import io.github.meistermods.enchantism.blockentity.EnchantmentApplicatorBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -26,6 +27,17 @@ public final class ModBlockEntities
                 EnchantmentApplicatorBlockEntity::new,
                 ModBlocks.ENCHANTMENT_APPLICATOR.get()
             ).build(null)
+        );
+
+    public static final RegistryObject<
+        BlockEntityType<ElementInfuserBlockEntity>
+        > ELEMENT_INFUSER =
+        BLOCK_ENTITIES.register(
+                "element_infuser",
+                () -> BlockEntityType.Builder.of(
+                        ElementInfuserBlockEntity::new,
+                        ModBlocks.ELEMENT_INFUSER.get()
+                ).build(null)
         );
 
     private ModBlockEntities()

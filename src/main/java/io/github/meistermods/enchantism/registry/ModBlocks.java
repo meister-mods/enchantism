@@ -1,6 +1,7 @@
 package io.github.meistermods.enchantism.registry;
 
 import io.github.meistermods.enchantism.Enchantism;
+import io.github.meistermods.enchantism.block.ElementInfuserBlock;
 import io.github.meistermods.enchantism.block.EnchantmentApplicatorBlock;
 import io.github.meistermods.enchantism.block.SpecialEnchantmentTableBlock;
 import net.minecraft.world.item.BlockItem;
@@ -89,6 +90,27 @@ public final class ModBlocks
                 COMPRESSED_COBBLESTONE.get(),
                 new Item.Properties()
             )
+        );
+
+    public static final RegistryObject<Block> ELEMENT_INFUSER =
+        BLOCKS.register(
+                "element_infuser",
+                () -> new ElementInfuserBlock(
+                        BlockBehaviour.Properties.of()
+                                .mapColor(MapColor.STONE)
+                                .strength(3.5F)
+                                .requiresCorrectToolForDrops()
+                                .sound(SoundType.STONE)
+                )
+        );
+
+    public static final RegistryObject<Item> ELEMENT_INFUSER_ITEM =
+        ITEMS.register(
+                "element_infuser",
+                () -> new BlockItem(
+                        ELEMENT_INFUSER.get(),
+                        new Item.Properties()
+                )
         );
 
     private ModBlocks()

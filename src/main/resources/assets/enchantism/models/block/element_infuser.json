@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "particle": "minecraft:block/cobblestone",
+    "top": "minecraft:block/stone",
+    "front": "minecraft:block/furnace_front",
+    "side": "minecraft:block/cobblestone"
+  }
+}
