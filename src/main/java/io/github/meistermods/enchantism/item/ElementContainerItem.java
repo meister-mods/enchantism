@@ -115,4 +115,28 @@ public final class ElementContainerItem extends Item {
                 "tooltip.enchantism.element_container.amount", formattedAmount, formattedMaximum)
             .withStyle(ChatFormatting.GRAY));
   }
+
+  public static boolean consumeElement(ItemStack container, int amount) {
+    if (amount <= 0) {
+      return false;
+    }
+
+    ElementType element = getElement(container);
+
+    int currentAmount = getElementAmount(container);
+
+    if (element == ElementType.EMPTY || currentAmount < amount) {
+      return false;
+    }
+
+    int remainingAmount = currentAmount - amount;
+
+    if (remainingAmount <= 0) {
+      setElement(container, ElementType.EMPTY, 0);
+    } else {
+      setElement(container, element, remainingAmount);
+    }
+
+    return true;
+  }
 }

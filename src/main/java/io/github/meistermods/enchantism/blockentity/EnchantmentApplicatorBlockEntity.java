@@ -1,13 +1,17 @@
 package io.github.meistermods.enchantism.blockentity;
 
-import io.github.meistermods.enchantism.enchantment.SpecialEnchantment;
+import io.github.meistermods.enchantism.element.ElementType;
+import io.github.meistermods.enchantism.enchantment.ElementEnchantmentContext;
+import io.github.meistermods.enchantism.enchantment.ElementEnchantmentSelector;
+import io.github.meistermods.enchantism.enchantment.ElementUsage;
+import io.github.meistermods.enchantism.enchantment.SelectedEnchantment;
+import io.github.meistermods.enchantism.item.ElementContainerItem;
 import io.github.meistermods.enchantism.menu.EnchantmentApplicatorMenu;
 import io.github.meistermods.enchantism.registry.ModBlockEntities;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -21,21 +25,25 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
-@SuppressWarnings({"null", "deprecation"})
+@SuppressWarnings({"null"})
 public final class EnchantmentApplicatorBlockEntity extends BlockEntity
     implements MenuProvider, Container {
-  public static final int BOOK_SLOT = 0;
-  public static final int MATERIAL_SLOT = 1;
-  public static final int OUTPUT_SLOT = 2;
-  public static final int SLOT_COUNT = 3;
+  public static final int ELEMENT_SLOT_START = 0;
+  public static final int ELEMENT_SLOT_COUNT = 9;
+  public static final int ELEMENT_SLOT_END = ELEMENT_SLOT_START + ELEMENT_SLOT_COUNT;
+
+  public static final int BOOK_SLOT = 9;
+  public static final int OUTPUT_SLOT = 10;
+  public static final int SLOT_COUNT = 11;
 
   public static final int DEFAULT_PROCESS_TIME = 200;
+
+  private static final int[] ELEMENT_COSTS = {100, 90, 80, 70, 60, 50, 40, 30, 20};
 
   private final NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
@@ -77,6 +85,7 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
     if (!blockEntity.canProcess()) {
       if (blockEntity.progress != 0) {
         blockEntity.progress = 0;
+
         setChanged(level, pos, state);
       }
 
@@ -95,14 +104,10 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
 
   private boolean canProcess() {
     ItemStack book = this.items.get(BOOK_SLOT);
-    ItemStack material = this.items.get(MATERIAL_SLOT);
+
     ItemStack output = this.items.get(OUTPUT_SLOT);
 
     if (!book.is(Items.BOOK)) {
-      return false;
-    }
-
-    if (material.isEmpty()) {
       return false;
     }
 
@@ -110,94 +115,132 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
       return false;
     }
 
-    return !collectCandidates(material).isEmpty();
+    List<ElementUsage> usages = this.createUsagePlan();
+
+    return !usages.isEmpty();
   }
 
-  private void process() {
-    if (this.level == null || !canProcess()) {
-      return;
-    }
+  private List<ElementUsage> createUsagePlan() {
+    List<ElementUsage> usages = new ArrayList<>();
 
-    ItemStack material = this.items.get(MATERIAL_SLOT);
-    List<Enchantment> candidates = collectCandidates(material);
+    for (int slot = ELEMENT_SLOT_START; slot < ELEMENT_SLOT_END; slot++) {
+      ItemStack container = this.items.get(slot);
 
-    if (candidates.isEmpty()) {
-      return;
-    }
-
-    Enchantment selected = candidates.get(this.level.random.nextInt(candidates.size()));
-
-    int selectedLevel = getGrantedLevel(selected, material);
-
-    ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
-
-    EnchantedBookItem.addEnchantment(result, new EnchantmentInstance(selected, selectedLevel));
-
-    this.items.get(BOOK_SLOT).shrink(1);
-    this.items.get(MATERIAL_SLOT).shrink(1);
-
-    if (this.items.get(BOOK_SLOT).isEmpty()) {
-      this.items.set(BOOK_SLOT, ItemStack.EMPTY);
-    }
-
-    if (this.items.get(MATERIAL_SLOT).isEmpty()) {
-      this.items.set(MATERIAL_SLOT, ItemStack.EMPTY);
-    }
-
-    this.items.set(OUTPUT_SLOT, result);
-
-    setChanged();
-  }
-
-  /**
-   * Normal enchantments are always eligible.
-   *
-   * <p>Special enchantments are eligible only when their material condition matches the inserted
-   * material.
-   */
-  private List<Enchantment> collectCandidates(ItemStack material) {
-    List<Enchantment> candidates = new ArrayList<>();
-
-    for (Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
-      if (enchantment instanceof SpecialEnchantment special) {
-        if (special.matchesMaterial(material) && special.isAllowedOnBooks()) {
-          candidates.add(special);
-        }
-
+      if (container.isEmpty()) {
         continue;
       }
 
-      if (enchantment.isDiscoverable() && enchantment.isAllowedOnBooks()) {
-        candidates.add(enchantment);
+      if (!(container.getItem() instanceof ElementContainerItem)) {
+        return List.of();
       }
+
+      ElementType element = ElementContainerItem.getElement(container);
+
+      if (element == ElementType.EMPTY) {
+        return List.of();
+      }
+
+      int relativeSlot = slot - ELEMENT_SLOT_START;
+
+      int requiredAmount = ELEMENT_COSTS[relativeSlot];
+
+      int storedAmount = ElementContainerItem.getElementAmount(container);
+
+      if (storedAmount < requiredAmount) {
+        return List.of();
+      }
+
+      usages.add(new ElementUsage(slot, element, requiredAmount));
     }
 
-    return candidates;
+    return usages;
   }
 
-  private int getGrantedLevel(Enchantment enchantment, ItemStack material) {
-    if (enchantment instanceof SpecialEnchantment special) {
-      int requestedLevel = special.getGrantedLevel(material);
-
-      return Math.max(special.getMinLevel(), Math.min(requestedLevel, special.getMaxLevel()));
+  private void process() {
+    if (this.level == null) {
+      return;
     }
 
-    int minLevel = enchantment.getMinLevel();
-    int maxLevel = enchantment.getMaxLevel();
-
-    if (minLevel >= maxLevel) {
-      return minLevel;
+    if (!this.canProcess()) {
+      return;
     }
 
-    return minLevel + this.level.random.nextInt(maxLevel - minLevel + 1);
+    List<ElementUsage> usages = this.createUsagePlan();
+
+    if (usages.isEmpty()) {
+      return;
+    }
+
+    ElementEnchantmentContext context = new ElementEnchantmentContext(usages);
+
+    SelectedEnchantment selected = ElementEnchantmentSelector.select(context, this.level.random);
+
+    if (selected == null) {
+      return;
+    }
+
+    /*
+     * First consume elements from copied containers.
+     * The real inventory is modified only after every copy succeeds.
+     */
+    List<ItemStack> updatedContainers = new ArrayList<>();
+
+    for (ElementUsage usage : usages) {
+      ItemStack copiedContainer = this.items.get(usage.slot()).copy();
+
+      boolean consumed = ElementContainerItem.consumeElement(copiedContainer, usage.amount());
+
+      if (!consumed) {
+        return;
+      }
+
+      updatedContainers.add(copiedContainer);
+    }
+
+    /*
+     * Create the result before committing the copied containers.
+     */
+    ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
+
+    EnchantedBookItem.addEnchantment(
+        result, new EnchantmentInstance(selected.enchantment(), selected.level()));
+
+    /*
+     * Commit all updated element containers at once.
+     */
+    for (int index = 0; index < usages.size(); index++) {
+      ElementUsage usage = usages.get(index);
+
+      ItemStack updatedContainer = updatedContainers.get(index);
+
+      this.items.set(usage.slot(), updatedContainer);
+    }
+
+    /*
+     * Consume one normal book.
+     */
+    ItemStack book = this.items.get(BOOK_SLOT);
+
+    book.shrink(1);
+
+    if (book.isEmpty()) {
+      this.items.set(BOOK_SLOT, ItemStack.EMPTY);
+    }
+
+    /*
+     * Store the enchanted book in the output slot.
+     */
+    this.items.set(OUTPUT_SLOT, result);
+
+    this.setChanged();
   }
 
-  public int getProgress() {
-    return this.progress;
-  }
+  public static int getElementCost(int elementSlot) {
+    if (elementSlot < ELEMENT_SLOT_START || elementSlot >= ELEMENT_SLOT_END) {
+      return 0;
+    }
 
-  public int getMaxProgress() {
-    return this.maxProgress;
+    return ELEMENT_COSTS[elementSlot - ELEMENT_SLOT_START];
   }
 
   public ContainerData getData() {
@@ -227,6 +270,7 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
     super.saveAdditional(tag);
 
     tag.putInt("Progress", this.progress);
+
     tag.putInt("MaxProgress", this.maxProgress);
 
     ContainerHelper.saveAllItems(tag, this.items);
@@ -251,8 +295,8 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
 
   @Override
   public boolean isEmpty() {
-    for (ItemStack item : this.items) {
-      if (!item.isEmpty()) {
+    for (ItemStack stack : this.items) {
+      if (!stack.isEmpty()) {
         return false;
       }
     }
@@ -270,7 +314,7 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
     ItemStack result = ContainerHelper.removeItem(this.items, slot, amount);
 
     if (!result.isEmpty()) {
-      setChanged();
+      this.setChanged();
     }
 
     return result;
@@ -285,11 +329,32 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
   public void setItem(int slot, ItemStack stack) {
     this.items.set(slot, stack);
 
-    if (stack.getCount() > getMaxStackSize()) {
-      stack.setCount(getMaxStackSize());
+    int maximumStackSize = this.isElementSlot(slot) ? 1 : this.getMaxStackSize();
+
+    if (stack.getCount() > maximumStackSize) {
+      stack.setCount(maximumStackSize);
     }
 
-    setChanged();
+    this.setChanged();
+  }
+
+  private boolean isElementSlot(int slot) {
+    return slot >= ELEMENT_SLOT_START && slot < ELEMENT_SLOT_END;
+  }
+
+  @Override
+  public boolean canPlaceItem(int slot, ItemStack stack) {
+    if (this.isElementSlot(slot)) {
+      return stack.getItem() instanceof ElementContainerItem;
+    }
+
+    return switch (slot) {
+      case BOOK_SLOT -> stack.is(Items.BOOK);
+
+      case OUTPUT_SLOT -> false;
+
+      default -> false;
+    };
   }
 
   @Override
@@ -310,18 +375,8 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
   }
 
   @Override
-  public boolean canPlaceItem(int slot, ItemStack stack) {
-    return switch (slot) {
-      case BOOK_SLOT -> stack.is(Items.BOOK);
-      case MATERIAL_SLOT -> !stack.isEmpty();
-      case OUTPUT_SLOT -> false;
-      default -> false;
-    };
-  }
-
-  @Override
   public void clearContent() {
     this.items.clear();
-    setChanged();
+    this.setChanged();
   }
 }

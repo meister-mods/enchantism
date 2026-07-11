@@ -1,7 +1,9 @@
 package io.github.meistermods.enchantism.menu;
 
 import io.github.meistermods.enchantism.blockentity.EnchantmentApplicatorBlockEntity;
+import io.github.meistermods.enchantism.item.ElementContainerItem;
 import io.github.meistermods.enchantism.registry.ModMenus;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -13,25 +15,22 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
-@SuppressWarnings("null")
+@SuppressWarnings({"null"})
 public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
-  private static final int MACHINE_SLOT_COUNT = 3;
+  private static final int MACHINE_SLOT_COUNT = 11;
 
-  private static final int PLAYER_INVENTORY_START = 3;
-  private static final int PLAYER_INVENTORY_END = 30;
+  private static final int PLAYER_INVENTORY_START = 11;
+  private static final int PLAYER_INVENTORY_END = 38;
 
-  private static final int HOTBAR_START = 30;
-  private static final int HOTBAR_END = 39;
+  private static final int HOTBAR_START = 38;
+  private static final int HOTBAR_END = 47;
 
   private final Container container;
   private final ContainerData data;
 
-  /**
-   * Client-side constructor.
-   *
-   * <p>Forge uses this constructor when the menu is opened from the network.
-   */
+  /** Client-side constructor. */
   public EnchantmentApplicatorMenu(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
     this(
         containerId,
@@ -60,48 +59,48 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
     this.container = container;
     this.data = data;
 
-    container.startOpen(inventory.player);
+    this.container.startOpen(inventory.player);
 
-    addMachineSlots();
-    addPlayerInventory(inventory);
-    addPlayerHotbar(inventory);
+    this.addMachineSlots();
+    this.addPlayerInventory(inventory);
+    this.addPlayerHotbar(inventory);
 
-    addDataSlots(data);
+    this.addDataSlots(data);
   }
 
   private void addMachineSlots() {
-    /*
-     * Book input.
-     */
+    int elementStartX = 26;
+    int elementStartY = 17;
+
+    for (int row = 0; row < 3; row++) {
+      for (int column = 0; column < 3; column++) {
+        int slot = row * 3 + column;
+
+        this.addSlot(
+            new Slot(this.container, slot, elementStartX + column * 18, elementStartY + row * 18) {
+              @Override
+              public boolean mayPlace(ItemStack stack) {
+                return stack.getItem() instanceof ElementContainerItem;
+              }
+
+              @Override
+              public int getMaxStackSize() {
+                return 1;
+              }
+            });
+      }
+    }
+
     this.addSlot(
-        new Slot(this.container, EnchantmentApplicatorBlockEntity.BOOK_SLOT, 56, 17) {
+        new Slot(this.container, EnchantmentApplicatorBlockEntity.BOOK_SLOT, 98, 35) {
           @Override
           public boolean mayPlace(ItemStack stack) {
             return stack.is(Items.BOOK);
           }
-
-          @Override
-          public int getMaxStackSize() {
-            return 64;
-          }
         });
 
-    /*
-     * Material input.
-     */
     this.addSlot(
-        new Slot(this.container, EnchantmentApplicatorBlockEntity.MATERIAL_SLOT, 56, 53) {
-          @Override
-          public boolean mayPlace(ItemStack stack) {
-            return !stack.isEmpty();
-          }
-        });
-
-    /*
-     * Enchanted-book output.
-     */
-    this.addSlot(
-        new Slot(this.container, EnchantmentApplicatorBlockEntity.OUTPUT_SLOT, 116, 35) {
+        new Slot(this.container, EnchantmentApplicatorBlockEntity.OUTPUT_SLOT, 152, 35) {
           @Override
           public boolean mayPlace(ItemStack stack) {
             return false;
@@ -128,8 +127,9 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
       return new SimpleContainer(MACHINE_SLOT_COUNT);
     }
 
-    var blockPos = buffer.readBlockPos();
-    var blockEntity = inventory.player.level().getBlockEntity(blockPos);
+    BlockPos blockPos = buffer.readBlockPos();
+
+    BlockEntity blockEntity = inventory.player.level().getBlockEntity(blockPos);
 
     if (blockEntity instanceof EnchantmentApplicatorBlockEntity applicator) {
       return applicator;
@@ -147,8 +147,9 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
   }
 
   public int getScaledProgress(int width) {
-    int progress = getProgress();
-    int maxProgress = getMaxProgress();
+    int progress = this.getProgress();
+
+    int maxProgress = this.getMaxProgress();
 
     if (progress <= 0 || maxProgress <= 0) {
       return 0;
@@ -158,7 +159,7 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
   }
 
   public boolean isProcessing() {
-    return getProgress() > 0;
+    return this.getProgress() > 0;
   }
 
   @Override
@@ -168,18 +169,22 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
 
   @Override
   public ItemStack quickMoveStack(Player player, int index) {
-    ItemStack copiedStack = ItemStack.EMPTY;
+    if (index < 0 || index >= this.slots.size()) {
+      return ItemStack.EMPTY;
+    }
+
     Slot sourceSlot = this.slots.get(index);
 
     if (!sourceSlot.hasItem()) {
-      return copiedStack;
+      return ItemStack.EMPTY;
     }
 
     ItemStack sourceStack = sourceSlot.getItem();
-    copiedStack = sourceStack.copy();
+
+    ItemStack copiedStack = sourceStack.copy();
 
     /*
-     * Machine slots -> player inventory.
+     * Machine inventory -> player inventory.
      */
     if (index < MACHINE_SLOT_COUNT) {
       if (!this.moveItemStackTo(sourceStack, PLAYER_INVENTORY_START, HOTBAR_END, true)) {
@@ -187,7 +192,19 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
       }
     }
     /*
-     * Player inventory -> book slot.
+     * Player inventory -> element container slots.
+     */
+    else if (sourceStack.getItem() instanceof ElementContainerItem) {
+      if (!this.moveItemStackTo(
+          sourceStack,
+          EnchantmentApplicatorBlockEntity.ELEMENT_SLOT_START,
+          EnchantmentApplicatorBlockEntity.ELEMENT_SLOT_END,
+          false)) {
+        return ItemStack.EMPTY;
+      }
+    }
+    /*
+     * Player inventory -> book input slot.
      */
     else if (sourceStack.is(Items.BOOK)) {
       if (!this.moveItemStackTo(
@@ -199,27 +216,22 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
       }
     }
     /*
-     * Player inventory -> material slot.
+     * Main inventory -> hotbar.
      */
-    else {
-      if (!this.moveItemStackTo(
-          sourceStack,
-          EnchantmentApplicatorBlockEntity.MATERIAL_SLOT,
-          EnchantmentApplicatorBlockEntity.MATERIAL_SLOT + 1,
-          false)) {
-        if (index >= PLAYER_INVENTORY_START && index < PLAYER_INVENTORY_END) {
-          if (!this.moveItemStackTo(sourceStack, HOTBAR_START, HOTBAR_END, false)) {
-            return ItemStack.EMPTY;
-          }
-        } else if (index >= HOTBAR_START && index < HOTBAR_END) {
-          if (!this.moveItemStackTo(
-              sourceStack, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, false)) {
-            return ItemStack.EMPTY;
-          }
-        } else {
-          return ItemStack.EMPTY;
-        }
+    else if (index >= PLAYER_INVENTORY_START && index < PLAYER_INVENTORY_END) {
+      if (!this.moveItemStackTo(sourceStack, HOTBAR_START, HOTBAR_END, false)) {
+        return ItemStack.EMPTY;
       }
+    }
+    /*
+     * Hotbar -> main inventory.
+     */
+    else if (index >= HOTBAR_START && index < HOTBAR_END) {
+      if (!this.moveItemStackTo(sourceStack, PLAYER_INVENTORY_START, PLAYER_INVENTORY_END, false)) {
+        return ItemStack.EMPTY;
+      }
+    } else {
+      return ItemStack.EMPTY;
     }
 
     if (sourceStack.isEmpty()) {
