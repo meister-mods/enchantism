@@ -18,6 +18,8 @@
   "tooltip.enchantism.element_container.empty": "No element stored",
   "tooltip.enchantism.element_container.element": "Element: %s",
   "tooltip.enchantism.element_container.amount": "Stored: %s/%s",
+  
+  "tooltip.enchantism.element_cost": "Element cost: %s",
 
   "container.enchantism.option": "Option %1$s: Level %2$s / %3$s material",
   "container.enchantism.no_offer": "No enchantment",

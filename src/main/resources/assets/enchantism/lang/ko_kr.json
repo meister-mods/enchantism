@@ -18,6 +18,8 @@
   "tooltip.enchantism.element_container.empty": "저장된 원소 없음",
   "tooltip.enchantism.element_container.element": "원소: %s",
   "tooltip.enchantism.element_container.amount": "저장량: %s/%s",
+
+  "tooltip.enchantism.element_cost": "소모 원소량: %s",
   
   "container.enchantism.option": "%1$s단계: 레벨 %2$s / 재료 %3$s개",
   "container.enchantism.no_offer": "인챈트 불가",

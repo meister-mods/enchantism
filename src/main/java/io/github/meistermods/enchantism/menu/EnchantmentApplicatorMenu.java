@@ -3,6 +3,7 @@ package io.github.meistermods.enchantism.menu;
 import io.github.meistermods.enchantism.blockentity.EnchantmentApplicatorBlockEntity;
 import io.github.meistermods.enchantism.item.ElementContainerItem;
 import io.github.meistermods.enchantism.registry.ModMenus;
+import javax.annotation.Nonnull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -16,6 +17,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"null"})
 public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
@@ -31,7 +33,8 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
   private final ContainerData data;
 
   /** Client-side constructor. */
-  public EnchantmentApplicatorMenu(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
+  public EnchantmentApplicatorMenu(
+      int containerId, @Nonnull Inventory inventory, @Nullable FriendlyByteBuf buffer) {
     this(
         containerId,
         inventory,
@@ -42,14 +45,17 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
   /** Server-side constructor. */
   public EnchantmentApplicatorMenu(
       int containerId,
-      Inventory inventory,
-      EnchantmentApplicatorBlockEntity blockEntity,
-      ContainerData data) {
+      @Nonnull Inventory inventory,
+      @Nonnull EnchantmentApplicatorBlockEntity blockEntity,
+      @Nonnull ContainerData data) {
     this(containerId, inventory, (Container) blockEntity, data);
   }
 
   private EnchantmentApplicatorMenu(
-      int containerId, Inventory inventory, Container container, ContainerData data) {
+      int containerId,
+      @Nonnull Inventory inventory,
+      @Nonnull Container container,
+      @Nonnull ContainerData data) {
     super(ModMenus.ENCHANTMENT_APPLICATOR.get(), containerId);
 
     checkContainerSize(container, MACHINE_SLOT_COUNT);
@@ -111,18 +117,20 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
   private void addPlayerInventory(Inventory inventory) {
     for (int row = 0; row < 3; row++) {
       for (int column = 0; column < 9; column++) {
-        this.addSlot(new Slot(inventory, column + row * 9 + 9, 8 + column * 18, 84 + row * 18));
+        this.addSlot(new Slot(inventory, column + row * 9 + 9, 26 + column * 18, 84 + row * 18));
       }
     }
   }
 
   private void addPlayerHotbar(Inventory inventory) {
     for (int column = 0; column < 9; column++) {
-      this.addSlot(new Slot(inventory, column, 8 + column * 18, 142));
+      this.addSlot(new Slot(inventory, column, 26 + column * 18, 142));
     }
   }
 
-  private static Container getBlockEntityContainer(Inventory inventory, FriendlyByteBuf buffer) {
+  @Nonnull
+  private static Container getBlockEntityContainer(
+      @Nonnull Inventory inventory, @Nullable FriendlyByteBuf buffer) {
     if (buffer == null) {
       return new SimpleContainer(MACHINE_SLOT_COUNT);
     }
@@ -163,12 +171,13 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
   }
 
   @Override
-  public boolean stillValid(Player player) {
+  public boolean stillValid(@Nonnull Player player) {
     return this.container.stillValid(player);
   }
 
   @Override
-  public ItemStack quickMoveStack(Player player, int index) {
+  @Nonnull
+  public ItemStack quickMoveStack(@Nonnull Player player, int index) {
     if (index < 0 || index >= this.slots.size()) {
       return ItemStack.EMPTY;
     }
@@ -250,7 +259,7 @@ public final class EnchantmentApplicatorMenu extends AbstractContainerMenu {
   }
 
   @Override
-  public void removed(Player player) {
+  public void removed(@Nonnull Player player) {
     super.removed(player);
 
     this.container.stopOpen(player);
