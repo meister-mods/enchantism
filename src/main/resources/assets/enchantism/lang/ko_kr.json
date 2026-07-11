@@ -4,6 +4,8 @@
 
   "block.enchantism.enchantment_applicator": "인챈트 부여기",
   "container.enchantism.enchantment_applicator": "인챈트 부여기",
+
+  "block.enchantism.compressed_cobblestone": "압축 조약돌",
   
   "container.enchantism.option": "%1$s단계: 레벨 %2$s / 재료 %3$s개",
   "container.enchantism.no_offer": "인챈트 불가",

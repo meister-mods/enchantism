@@ -70,6 +70,27 @@ public final class ModBlocks
             )
         );
 
+    public static final RegistryObject<Block> COMPRESSED_COBBLESTONE =
+        BLOCKS.register(
+            "compressed_cobblestone",
+            () -> new Block(
+                BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .strength(4.0F, 8.0F)
+                    .requiresCorrectToolForDrops()
+                    .sound(SoundType.STONE)
+            )
+        );
+
+    public static final RegistryObject<Item> COMPRESSED_COBBLESTONE_ITEM =
+        ITEMS.register(
+            "compressed_cobblestone",
+            () -> new BlockItem(
+                COMPRESSED_COBBLESTONE.get(),
+                new Item.Properties()
+            )
+        );
+
     private ModBlocks()
     {
     }
