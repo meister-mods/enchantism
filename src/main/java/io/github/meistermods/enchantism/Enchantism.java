@@ -11,19 +11,17 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Enchantism.MOD_ID)
-public final class Enchantism
-{
-    public static final String MOD_ID = "enchantism";
+public final class Enchantism {
+  public static final String MOD_ID = "enchantism";
 
-    public Enchantism(FMLJavaModLoadingContext context)
-    {
-        IEventBus modEventBus = context.getModEventBus();
+  public Enchantism(FMLJavaModLoadingContext context) {
+    IEventBus modEventBus = context.getModEventBus();
 
-        ModBlocks.register(modEventBus);
-        ModBlockEntities.register(modEventBus);
-        ModItems.register(modEventBus);
-        ModMenus.register(modEventBus);
-        ModCreativeTabs.register(modEventBus);
-        ModEnchantments.register(modEventBus);
-    }
+    ModBlocks.register(modEventBus);
+    ModBlockEntities.register(modEventBus);
+    ModItems.register(modEventBus);
+    ModMenus.register(modEventBus);
+    ModCreativeTabs.register(modEventBus);
+    ModEnchantments.register(modEventBus);
+  }
 }

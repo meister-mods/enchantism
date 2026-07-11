@@ -10,42 +10,31 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 @SuppressWarnings("null")
-public final class ModBlockEntities
-{
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-        DeferredRegister.create(
-            ForgeRegistries.BLOCK_ENTITY_TYPES,
-            Enchantism.MOD_ID
-        );
+public final class ModBlockEntities {
+  public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
+      DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Enchantism.MOD_ID);
 
-    public static final RegistryObject<
-        BlockEntityType<EnchantmentApplicatorBlockEntity>
-        > ENCHANTMENT_APPLICATOR =
-        BLOCK_ENTITIES.register(
-            "enchantment_applicator",
-            () -> BlockEntityType.Builder.of(
-                EnchantmentApplicatorBlockEntity::new,
-                ModBlocks.ENCHANTMENT_APPLICATOR.get()
-            ).build(null)
-        );
+  public static final RegistryObject<BlockEntityType<EnchantmentApplicatorBlockEntity>>
+      ENCHANTMENT_APPLICATOR =
+          BLOCK_ENTITIES.register(
+              "enchantment_applicator",
+              () ->
+                  BlockEntityType.Builder.of(
+                          EnchantmentApplicatorBlockEntity::new,
+                          ModBlocks.ENCHANTMENT_APPLICATOR.get())
+                      .build(null));
 
-    public static final RegistryObject<
-        BlockEntityType<ElementInfuserBlockEntity>
-        > ELEMENT_INFUSER =
-        BLOCK_ENTITIES.register(
-                "element_infuser",
-                () -> BlockEntityType.Builder.of(
-                        ElementInfuserBlockEntity::new,
-                        ModBlocks.ELEMENT_INFUSER.get()
-                ).build(null)
-        );
+  public static final RegistryObject<BlockEntityType<ElementInfuserBlockEntity>> ELEMENT_INFUSER =
+      BLOCK_ENTITIES.register(
+          "element_infuser",
+          () ->
+              BlockEntityType.Builder.of(
+                      ElementInfuserBlockEntity::new, ModBlocks.ELEMENT_INFUSER.get())
+                  .build(null));
 
-    private ModBlockEntities()
-    {
-    }
+  private ModBlockEntities() {}
 
-    public static void register(IEventBus modEventBus)
-    {
-        BLOCK_ENTITIES.register(modEventBus);
-    }
+  public static void register(IEventBus modEventBus) {
+    BLOCK_ENTITIES.register(modEventBus);
+  }
 }

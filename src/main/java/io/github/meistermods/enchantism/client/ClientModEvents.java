@@ -15,36 +15,20 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @Mod.EventBusSubscriber(
     modid = Enchantism.MOD_ID,
     bus = Mod.EventBusSubscriber.Bus.MOD,
-    value = Dist.CLIENT
-)
-public final class ClientModEvents
-{
-    private ClientModEvents()
-    {
-    }
+    value = Dist.CLIENT)
+public final class ClientModEvents {
+  private ClientModEvents() {}
 
-    @SubscribeEvent
-    public static void onClientSetup(
-        FMLClientSetupEvent event
-    )
-    {
-        event.enqueueWork(() ->
-        {
-            MenuScreens.register(
-                ModMenus.SPECIAL_ENCHANTMENT.get(),
-                SpecialEnchantmentScreen::new
-            );
+  @SubscribeEvent
+  public static void onClientSetup(FMLClientSetupEvent event) {
+    event.enqueueWork(
+        () -> {
+          MenuScreens.register(ModMenus.SPECIAL_ENCHANTMENT.get(), SpecialEnchantmentScreen::new);
 
-            MenuScreens.register(
-                ModMenus.ENCHANTMENT_APPLICATOR.get(),
-                EnchantmentApplicatorScreen::new
-            );
-            
-            MenuScreens.register(
-                    ModMenus.ELEMENT_INFUSER.get(),
-                    ElementInfuserScreen::new
-            );
+          MenuScreens.register(
+              ModMenus.ENCHANTMENT_APPLICATOR.get(), EnchantmentApplicatorScreen::new);
+
+          MenuScreens.register(ModMenus.ELEMENT_INFUSER.get(), ElementInfuserScreen::new);
         });
-    }
-    
+  }
 }

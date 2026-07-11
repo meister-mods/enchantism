@@ -9,43 +9,30 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 @SuppressWarnings("null")
-public final class ModCreativeTabs
-{
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
-        DeferredRegister.create(
-            Registries.CREATIVE_MODE_TAB,
-            Enchantism.MOD_ID
-        );
+public final class ModCreativeTabs {
+  public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
+      DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Enchantism.MOD_ID);
 
-    public static final RegistryObject<CreativeModeTab> ENCHANTISM_TAB =
-        CREATIVE_TABS.register(
-            "enchantism",
-            () -> CreativeModeTab.builder()
-                .title(Component.translatable(
-                    "itemGroup.enchantism"
-                ))
-                .icon(() ->
-                    ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM
-                        .get()
-                        .getDefaultInstance()
-                )
-                .displayItems((parameters, output) ->
-                {
-                    output.accept(ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get());
-                    output.accept(ModBlocks.ENCHANTMENT_APPLICATOR_ITEM.get());
-                    output.accept(ModBlocks.ELEMENT_INFUSER_ITEM.get());
-                    output.accept(ModItems.ELEMENT_CONTAINER.get());
-                    output.accept(ModBlocks.COMPRESSED_COBBLESTONE_ITEM.get());
-                })
-                .build()
-        );
+  public static final RegistryObject<CreativeModeTab> ENCHANTISM_TAB =
+      CREATIVE_TABS.register(
+          "enchantism",
+          () ->
+              CreativeModeTab.builder()
+                  .title(Component.translatable("itemGroup.enchantism"))
+                  .icon(() -> ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get().getDefaultInstance())
+                  .displayItems(
+                      (parameters, output) -> {
+                        output.accept(ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get());
+                        output.accept(ModBlocks.ENCHANTMENT_APPLICATOR_ITEM.get());
+                        output.accept(ModBlocks.ELEMENT_INFUSER_ITEM.get());
+                        output.accept(ModItems.ELEMENT_CONTAINER.get());
+                        output.accept(ModBlocks.COMPRESSED_COBBLESTONE_ITEM.get());
+                      })
+                  .build());
 
-    private ModCreativeTabs()
-    {
-    }
+  private ModCreativeTabs() {}
 
-    public static void register(IEventBus modEventBus)
-    {
-        CREATIVE_TABS.register(modEventBus);
-    }
+  public static void register(IEventBus modEventBus) {
+    CREATIVE_TABS.register(modEventBus);
+  }
 }

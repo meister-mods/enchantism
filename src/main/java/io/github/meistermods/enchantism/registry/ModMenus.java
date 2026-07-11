@@ -13,48 +13,25 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 @SuppressWarnings("null")
-public final class ModMenus
-{
-    public static final DeferredRegister<MenuType<?>> MENUS =
-        DeferredRegister.create(
-            ForgeRegistries.MENU_TYPES,
-            Enchantism.MOD_ID
-        );
+public final class ModMenus {
+  public static final DeferredRegister<MenuType<?>> MENUS =
+      DeferredRegister.create(ForgeRegistries.MENU_TYPES, Enchantism.MOD_ID);
 
-    public static final RegistryObject<MenuType<SpecialEnchantmentMenu>>
-        SPECIAL_ENCHANTMENT = MENUS.register(
-            "special_enchantment",
-            () -> new MenuType<>(
-                SpecialEnchantmentMenu::new,
-                FeatureFlags.DEFAULT_FLAGS
-            )
-        );
+  public static final RegistryObject<MenuType<SpecialEnchantmentMenu>> SPECIAL_ENCHANTMENT =
+      MENUS.register(
+          "special_enchantment",
+          () -> new MenuType<>(SpecialEnchantmentMenu::new, FeatureFlags.DEFAULT_FLAGS));
 
-    public static final RegistryObject<MenuType<EnchantmentApplicatorMenu>>
-        ENCHANTMENT_APPLICATOR =
-        MENUS.register(
-            "enchantment_applicator",
-            () -> IForgeMenuType.create(
-                EnchantmentApplicatorMenu::new
-            )
-        );
+  public static final RegistryObject<MenuType<EnchantmentApplicatorMenu>> ENCHANTMENT_APPLICATOR =
+      MENUS.register(
+          "enchantment_applicator", () -> IForgeMenuType.create(EnchantmentApplicatorMenu::new));
 
-    public static final RegistryObject<
-        MenuType<ElementInfuserMenu>
-        > ELEMENT_INFUSER =
-        MENUS.register(
-                "element_infuser",
-                () -> IForgeMenuType.create(
-                        ElementInfuserMenu::new
-                )
-        );
+  public static final RegistryObject<MenuType<ElementInfuserMenu>> ELEMENT_INFUSER =
+      MENUS.register("element_infuser", () -> IForgeMenuType.create(ElementInfuserMenu::new));
 
-    private ModMenus()
-    {
-    }
+  private ModMenus() {}
 
-    public static void register(IEventBus modEventBus)
-    {
-        MENUS.register(modEventBus);
-    }
+  public static void register(IEventBus modEventBus) {
+    MENUS.register(modEventBus);
+  }
 }

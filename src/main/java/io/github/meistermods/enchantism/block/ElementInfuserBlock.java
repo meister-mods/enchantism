@@ -1,9 +1,5 @@
 package io.github.meistermods.enchantism.block;
 
-import javax.annotation.Nonnull;
-
-import org.jetbrains.annotations.Nullable;
-
 import io.github.meistermods.enchantism.blockentity.ElementInfuserBlockEntity;
 import io.github.meistermods.enchantism.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -26,145 +22,89 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"null", "deprecation"})
-public final class ElementInfuserBlock extends BaseEntityBlock
-{
-    public static final DirectionProperty FACING =
-            HorizontalDirectionalBlock.FACING;
+public final class ElementInfuserBlock extends BaseEntityBlock {
+  public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
-    public ElementInfuserBlock(Properties properties)
-    {
-        super(properties);
+  public ElementInfuserBlock(Properties properties) {
+    super(properties);
 
-        this.registerDefaultState(
-                this.stateDefinition.any()
-                        .setValue(FACING, Direction.NORTH)
-        );
+    this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+  }
+
+  @Override
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+    builder.add(FACING);
+  }
+
+  @Override
+  @Nullable
+  public BlockState getStateForPlacement(BlockPlaceContext context) {
+    return this.defaultBlockState()
+        .setValue(FACING, context.getHorizontalDirection().getOpposite());
+  }
+
+  @Override
+  public RenderShape getRenderShape(BlockState state) {
+    return RenderShape.MODEL;
+  }
+
+  @Override
+  @Nullable
+  public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    return new ElementInfuserBlockEntity(pos, state);
+  }
+
+  @Override
+  public InteractionResult use(
+      BlockState state,
+      Level level,
+      BlockPos pos,
+      Player player,
+      InteractionHand hand,
+      BlockHitResult hit) {
+    if (level.isClientSide) {
+      return InteractionResult.SUCCESS;
     }
 
-    @Override
-    protected void createBlockStateDefinition(
-            @Nonnull StateDefinition.Builder<Block, BlockState> builder
-    )
-    {
-        builder.add(FACING);
+    if (!(player instanceof ServerPlayer serverPlayer)) {
+      return InteractionResult.CONSUME;
     }
 
-    @Override
-    @Nullable
-    public BlockState getStateForPlacement(
-            @Nonnull BlockPlaceContext context
-    )
-    {
-        return this.defaultBlockState()
-                .setValue(
-                        FACING,
-                        context.getHorizontalDirection().getOpposite()
-                );
+    BlockEntity blockEntity = level.getBlockEntity(pos);
+
+    if (blockEntity instanceof ElementInfuserBlockEntity infuser) {
+      NetworkHooks.openScreen(serverPlayer, infuser, pos);
     }
 
-    @Override
-    @Nonnull
-    public RenderShape getRenderShape(
-            @Nonnull BlockState state
-    )
-    {
-        return RenderShape.MODEL;
+    return InteractionResult.CONSUME;
+  }
+
+  @Override
+  @Nullable
+  public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+      Level level, BlockState state, BlockEntityType<T> type) {
+    if (level.isClientSide) {
+      return null;
     }
 
-    @Override
-    @Nullable
-    public BlockEntity newBlockEntity(
-            @Nonnull BlockPos pos,
-            @Nonnull BlockState state
-    )
-    {
-        return new ElementInfuserBlockEntity(pos, state);
+    return createTickerHelper(
+        type, ModBlockEntities.ELEMENT_INFUSER.get(), ElementInfuserBlockEntity::serverTick);
+  }
+
+  @Override
+  public void onRemove(
+      BlockState oldState, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    if (!oldState.is(newState.getBlock())) {
+      BlockEntity blockEntity = level.getBlockEntity(pos);
+
+      if (blockEntity instanceof ElementInfuserBlockEntity infuser) {
+        infuser.dropContents();
+      }
     }
 
-    @Override
-    @Nonnull
-    public InteractionResult use(
-            @Nonnull BlockState state,
-            @Nonnull Level level,
-            @Nonnull BlockPos pos,
-            @Nonnull Player player,
-            @Nonnull InteractionHand hand,
-            @Nonnull BlockHitResult hit
-    )
-    {
-        if (level.isClientSide)
-        {
-            return InteractionResult.SUCCESS;
-        }
-
-        if (!(player instanceof ServerPlayer serverPlayer))
-        {
-            return InteractionResult.CONSUME;
-        }
-
-        BlockEntity blockEntity =
-                level.getBlockEntity(pos);
-
-        if (blockEntity instanceof ElementInfuserBlockEntity infuser)
-        {
-            NetworkHooks.openScreen(
-                    serverPlayer,
-                    infuser,
-                    pos
-            );
-        }
-
-        return InteractionResult.CONSUME;
-    }
-
-    @Override
-    @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
-            @Nonnull Level level,
-            @Nonnull BlockState state,
-            @Nonnull BlockEntityType<T> type
-    )
-    {
-        if (level.isClientSide)
-        {
-            return null;
-        }
-
-        return createTickerHelper(
-                type,
-                ModBlockEntities.ELEMENT_INFUSER.get(),
-                ElementInfuserBlockEntity::serverTick
-        );
-    }
-
-    @Override
-    public void onRemove(
-            @Nonnull BlockState oldState,
-            @Nonnull Level level,
-            @Nonnull BlockPos pos,
-            @Nonnull BlockState newState,
-            boolean movedByPiston
-    )
-    {
-        if (!oldState.is(newState.getBlock()))
-        {
-            BlockEntity blockEntity =
-                    level.getBlockEntity(pos);
-
-            if (blockEntity instanceof ElementInfuserBlockEntity infuser)
-            {
-                infuser.dropContents();
-            }
-        }
-
-        super.onRemove(
-                oldState,
-                level,
-                pos,
-                newState,
-                movedByPiston
-        );
-    }
+    super.onRemove(oldState, level, pos, newState, movedByPiston);
+  }
 }

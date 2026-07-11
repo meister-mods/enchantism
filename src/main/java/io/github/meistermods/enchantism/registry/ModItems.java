@@ -10,27 +10,16 @@ import net.minecraftforge.registries.RegistryObject;
 
 @SuppressWarnings("null")
 public final class ModItems {
-    public static final DeferredRegister<Item> ITEMS =
-        DeferredRegister.create(
-            ForgeRegistries.ITEMS,
-            Enchantism.MOD_ID
-        );
+  public static final DeferredRegister<Item> ITEMS =
+      DeferredRegister.create(ForgeRegistries.ITEMS, Enchantism.MOD_ID);
 
-    public static final RegistryObject<Item> ELEMENT_CONTAINER =
-        ITEMS.register(
-            "element_container",
-            () -> new ElementContainerItem(
-                new Item.Properties()
-                    .stacksTo(1)
-            )
-        );
+  public static final RegistryObject<Item> ELEMENT_CONTAINER =
+      ITEMS.register(
+          "element_container", () -> new ElementContainerItem(new Item.Properties().stacksTo(1)));
 
-    private ModItems()
-    {
-    }
+  private ModItems() {}
 
-    public static void register(IEventBus modEventBus)
-    {
-        ITEMS.register(modEventBus);
-    }
+  public static void register(IEventBus modEventBus) {
+    ITEMS.register(modEventBus);
+  }
 }

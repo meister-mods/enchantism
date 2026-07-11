@@ -1,9 +1,5 @@
 package io.github.meistermods.enchantism.blockentity;
 
-import javax.annotation.Nonnull;
-
-import org.jetbrains.annotations.Nullable;
-
 import io.github.meistermods.enchantism.element.ElementHelper;
 import io.github.meistermods.enchantism.element.ElementMaterialData;
 import io.github.meistermods.enchantism.item.ElementContainerItem;
@@ -25,419 +21,263 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings({"null", "deprecation"})
-public final class ElementInfuserBlockEntity
-        extends BlockEntity
-        implements MenuProvider, Container
-{
-    public static final int MATERIAL_SLOT = 0;
-    public static final int CONTAINER_SLOT = 1;
+@SuppressWarnings({"null"})
+public final class ElementInfuserBlockEntity extends BlockEntity
+    implements MenuProvider, Container {
+  public static final int MATERIAL_SLOT = 0;
+  public static final int CONTAINER_SLOT = 1;
 
-    public static final int SLOT_COUNT = 2;
-    public static final int DEFAULT_PROCESS_TIME = 20;
+  public static final int SLOT_COUNT = 2;
+  public static final int DEFAULT_PROCESS_TIME = 20;
 
-    private final NonNullList<ItemStack> items =
-            NonNullList.withSize(
-                    SLOT_COUNT,
-                    ItemStack.EMPTY
-            );
+  private final NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 
-    private int progress;
-    private int maxProgress = DEFAULT_PROCESS_TIME;
+  private int progress;
+  private int maxProgress = DEFAULT_PROCESS_TIME;
 
-    private final ContainerData data =
-            new ContainerData()
-            {
-                @Override
-                public int get(int index)
-                {
-                    return switch (index)
-                    {
-                        case 0 -> progress;
-                        case 1 -> maxProgress;
-                        default -> 0;
-                    };
-                }
-
-                @Override
-                public void set(int index, int value)
-                {
-                    switch (index)
-                    {
-                        case 0 -> progress = value;
-                        case 1 -> maxProgress = value;
-                        default ->
-                        {
-                        }
-                    }
-                }
-
-                @Override
-                public int getCount()
-                {
-                    return 2;
-                }
-            };
-
-    public ElementInfuserBlockEntity(
-            @Nonnull BlockPos pos,
-            @Nonnull BlockState state
-    )
-    {
-        super(
-                ModBlockEntities.ELEMENT_INFUSER.get(),
-                pos,
-                state
-        );
-    }
-
-    public static void serverTick(
-            @Nonnull Level level,
-            @Nonnull BlockPos pos,
-            @Nonnull BlockState state,
-            @Nonnull ElementInfuserBlockEntity blockEntity
-    )
-    {
-        if (!blockEntity.canProcess())
-        {
-            if (blockEntity.progress != 0)
-            {
-                blockEntity.progress = 0;
-
-                setChanged(
-                        level,
-                        pos,
-                        state
-                );
-            }
-
-            return;
+  private final ContainerData data =
+      new ContainerData() {
+        @Override
+        public int get(int index) {
+          return switch (index) {
+            case 0 -> progress;
+            case 1 -> maxProgress;
+            default -> 0;
+          };
         }
 
-        blockEntity.progress++;
-
-        if (blockEntity.progress >= blockEntity.maxProgress)
-        {
-            blockEntity.process();
-            blockEntity.progress = 0;
+        @Override
+        public void set(int index, int value) {
+          switch (index) {
+            case 0 -> progress = value;
+            case 1 -> maxProgress = value;
+            default -> {}
+          }
         }
 
-        setChanged(
-                level,
-                pos,
-                state
-        );
+        @Override
+        public int getCount() {
+          return 2;
+        }
+      };
+
+  public ElementInfuserBlockEntity(BlockPos pos, BlockState state) {
+    super(ModBlockEntities.ELEMENT_INFUSER.get(), pos, state);
+  }
+
+  public static void serverTick(
+      Level level, BlockPos pos, BlockState state, ElementInfuserBlockEntity blockEntity) {
+    if (!blockEntity.canProcess()) {
+      if (blockEntity.progress != 0) {
+        blockEntity.progress = 0;
+
+        setChanged(level, pos, state);
+      }
+
+      return;
     }
 
-    private boolean canProcess()
-{
-    ItemStack material =
-            this.items.get(MATERIAL_SLOT);
+    blockEntity.progress++;
 
-    ItemStack container =
-            this.items.get(CONTAINER_SLOT);
-
-    if (material.isEmpty())
-    {
-        return false;
+    if (blockEntity.progress >= blockEntity.maxProgress) {
+      blockEntity.process();
+      blockEntity.progress = 0;
     }
 
-    if (!(container.getItem() instanceof ElementContainerItem))
-    {
-        return false;
+    setChanged(level, pos, state);
+  }
+
+  private boolean canProcess() {
+    ItemStack material = this.items.get(MATERIAL_SLOT);
+
+    ItemStack container = this.items.get(CONTAINER_SLOT);
+
+    if (material.isEmpty()) {
+      return false;
     }
 
-    ElementMaterialData materialData =
-            ElementHelper.getMaterialData(material);
-
-    if (materialData == null)
-    {
-        return false;
+    if (!(container.getItem() instanceof ElementContainerItem)) {
+      return false;
     }
 
-    if (!ElementContainerItem.canAccept(
-            container,
-            materialData.elementType()
-    ))
-    {
-        return false;
+    ElementMaterialData materialData = ElementHelper.getMaterialData(material);
+
+    if (materialData == null) {
+      return false;
     }
 
-    int currentAmount =
-            ElementContainerItem.getElementAmount(container);
-
-    long resultAmount =
-            (long) currentAmount
-                    + materialData.amount();
-
-    return resultAmount
-            <= ElementContainerItem.MAX_ELEMENT_AMOUNT;
-}
-
-    private void process()
-{
-    if (!this.canProcess())
-    {
-        return;
+    if (!ElementContainerItem.canAccept(container, materialData.elementType())) {
+      return false;
     }
 
-    ItemStack material =
-            this.items.get(MATERIAL_SLOT);
+    int currentAmount = ElementContainerItem.getElementAmount(container);
 
-    ItemStack container =
-            this.items.get(CONTAINER_SLOT);
+    long resultAmount = (long) currentAmount + materialData.amount();
 
-    ElementMaterialData materialData =
-            ElementHelper.getMaterialData(material);
+    return resultAmount <= ElementContainerItem.MAX_ELEMENT_AMOUNT;
+  }
 
-    if (materialData == null)
-    {
-        return;
+  private void process() {
+    if (!this.canProcess()) {
+      return;
+    }
+
+    ItemStack material = this.items.get(MATERIAL_SLOT);
+
+    ItemStack container = this.items.get(CONTAINER_SLOT);
+
+    ElementMaterialData materialData = ElementHelper.getMaterialData(material);
+
+    if (materialData == null) {
+      return;
     }
 
     boolean success =
-            ElementContainerItem.addElement(
-                    container,
-                    materialData.elementType(),
-                    materialData.amount()
-            );
+        ElementContainerItem.addElement(
+            container, materialData.elementType(), materialData.amount());
 
-    if (!success)
-    {
-        return;
+    if (!success) {
+      return;
     }
 
     material.shrink(1);
 
-    if (material.isEmpty())
-    {
-        this.items.set(
-                MATERIAL_SLOT,
-                ItemStack.EMPTY
-        );
+    if (material.isEmpty()) {
+      this.items.set(MATERIAL_SLOT, ItemStack.EMPTY);
     }
 
     this.setChanged();
-}
+  }
 
-    public ContainerData getData()
-    {
-        return this.data;
+  public ContainerData getData() {
+    return this.data;
+  }
+
+  public void dropContents() {
+    if (this.level == null) {
+      return;
     }
 
-    public void dropContents()
-    {
-        if (this.level == null)
-        {
-            return;
-        }
+    Containers.dropContents(this.level, this.worldPosition, this);
+  }
 
-        Containers.dropContents(
-                this.level,
-                this.worldPosition,
-                this
-        );
+  @Override
+  public Component getDisplayName() {
+    return Component.translatable("container.enchantism.element_infuser");
+  }
+
+  @Override
+  @Nullable
+  public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player) {
+    return new ElementInfuserMenu(containerId, inventory, this, this.data);
+  }
+
+  @Override
+  protected void saveAdditional(CompoundTag tag) {
+    super.saveAdditional(tag);
+
+    tag.putInt("Progress", this.progress);
+
+    tag.putInt("MaxProgress", this.maxProgress);
+
+    ContainerHelper.saveAllItems(tag, this.items);
+  }
+
+  @Override
+  public void load(CompoundTag tag) {
+    super.load(tag);
+
+    this.progress = tag.getInt("Progress");
+
+    this.maxProgress =
+        tag.contains("MaxProgress") ? tag.getInt("MaxProgress") : DEFAULT_PROCESS_TIME;
+
+    ContainerHelper.loadAllItems(tag, this.items);
+  }
+
+  @Override
+  public int getContainerSize() {
+    return SLOT_COUNT;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    for (ItemStack stack : this.items) {
+      if (!stack.isEmpty()) {
+        return false;
+      }
     }
 
-    @Override
-    @Nonnull
-    public Component getDisplayName()
-    {
-        return Component.translatable(
-                "container.enchantism.element_infuser"
-        );
+    return true;
+  }
+
+  @Override
+  public ItemStack getItem(int slot) {
+    return this.items.get(slot);
+  }
+
+  @Override
+  public ItemStack removeItem(int slot, int amount) {
+    ItemStack result = ContainerHelper.removeItem(this.items, slot, amount);
+
+    if (!result.isEmpty()) {
+      this.setChanged();
     }
 
-    @Override
-    @Nullable
-    public AbstractContainerMenu createMenu(
-            int containerId,
-            @Nonnull Inventory inventory,
-            @Nonnull Player player
-    )
-    {
-        return new ElementInfuserMenu(
-                containerId,
-                inventory,
-                this,
-                this.data
-        );
+    return result;
+  }
+
+  @Override
+  public ItemStack removeItemNoUpdate(int slot) {
+    return ContainerHelper.takeItem(this.items, slot);
+  }
+
+  @Override
+  public void setItem(int slot, ItemStack stack) {
+    this.items.set(slot, stack);
+
+    int maximumStackSize = slot == CONTAINER_SLOT ? 1 : this.getMaxStackSize();
+
+    if (stack.getCount() > maximumStackSize) {
+      stack.setCount(maximumStackSize);
     }
 
-    @Override
-    protected void saveAdditional(
-            @Nonnull CompoundTag tag
-    )
-    {
-        super.saveAdditional(tag);
+    this.setChanged();
+  }
 
-        tag.putInt(
-                "Progress",
-                this.progress
-        );
-
-        tag.putInt(
-                "MaxProgress",
-                this.maxProgress
-        );
-
-        ContainerHelper.saveAllItems(
-                tag,
-                this.items
-        );
+  @Override
+  public boolean stillValid(Player player) {
+    if (this.level == null) {
+      return false;
     }
 
-    @Override
-    public void load(
-            @Nonnull CompoundTag tag
-    )
-    {
-        super.load(tag);
-
-        this.progress =
-                tag.getInt("Progress");
-
-        this.maxProgress =
-                tag.contains("MaxProgress")
-                        ? tag.getInt("MaxProgress")
-                        : DEFAULT_PROCESS_TIME;
-
-        ContainerHelper.loadAllItems(
-                tag,
-                this.items
-        );
+    if (this.level.getBlockEntity(this.worldPosition) != this) {
+      return false;
     }
 
-    @Override
-    public int getContainerSize()
-    {
-        return SLOT_COUNT;
-    }
+    return player.distanceToSqr(
+            this.worldPosition.getX() + 0.5D,
+            this.worldPosition.getY() + 0.5D,
+            this.worldPosition.getZ() + 0.5D)
+        <= 64.0D;
+  }
 
-    @Override
-    public boolean isEmpty()
-    {
-        for (ItemStack stack : this.items)
-        {
-            if (!stack.isEmpty())
-            {
-                return false;
-            }
-        }
+  @Override
+  public boolean canPlaceItem(int slot, ItemStack stack) {
+    return switch (slot) {
+      case MATERIAL_SLOT -> ElementHelper.isValidMaterial(stack);
 
-        return true;
-    }
+      case CONTAINER_SLOT -> stack.getItem() instanceof ElementContainerItem;
 
-    @Override
-    @Nonnull
-    public ItemStack getItem(int slot)
-    {
-        return this.items.get(slot);
-    }
+      default -> false;
+    };
+  }
 
-    @Override
-    @Nonnull
-    public ItemStack removeItem(
-            int slot,
-            int amount
-    )
-    {
-        ItemStack result =
-                ContainerHelper.removeItem(
-                        this.items,
-                        slot,
-                        amount
-                );
-
-        if (!result.isEmpty())
-        {
-            this.setChanged();
-        }
-
-        return result;
-    }
-
-    @Override
-    @Nonnull
-    public ItemStack removeItemNoUpdate(int slot)
-    {
-        return ContainerHelper.takeItem(
-                this.items,
-                slot
-        );
-    }
-
-    @Override
-    public void setItem(
-            int slot,
-            @Nonnull ItemStack stack
-    )
-    {
-        this.items.set(
-                slot,
-                stack
-        );
-
-        int maximumStackSize =
-                slot == CONTAINER_SLOT
-                        ? 1
-                        : this.getMaxStackSize();
-
-        if (stack.getCount() > maximumStackSize)
-        {
-            stack.setCount(maximumStackSize);
-        }
-
-        this.setChanged();
-    }
-
-    @Override
-    public boolean stillValid(
-            @Nonnull Player player
-    )
-    {
-        if (this.level == null)
-        {
-            return false;
-        }
-
-        if (this.level.getBlockEntity(this.worldPosition) != this)
-        {
-            return false;
-        }
-
-        return player.distanceToSqr(
-                this.worldPosition.getX() + 0.5D,
-                this.worldPosition.getY() + 0.5D,
-                this.worldPosition.getZ() + 0.5D
-        ) <= 64.0D;
-    }
-
-    @Override
-    public boolean canPlaceItem(
-            int slot,
-            @Nonnull ItemStack stack
-    )
-    {
-        return switch (slot)
-        {
-            case MATERIAL_SLOT ->
-        ElementHelper.isValidMaterial(stack);
-
-            case CONTAINER_SLOT ->
-                    stack.getItem()
-                            instanceof ElementContainerItem;
-
-            default ->
-                    false;
-        };
-    }
-
-    @Override
-    public void clearContent()
-    {
-        this.items.clear();
-        this.setChanged();
-    }
+  @Override
+  public void clearContent() {
+    this.items.clear();
+    this.setChanged();
+  }
 }
