@@ -12,9 +12,9 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @SuppressWarnings("null")
 @Mod.EventBusSubscriber(
-        modid = Enchantism.MOD_ID,
-        bus = Mod.EventBusSubscriber.Bus.MOD,
-        value = Dist.CLIENT
+    modid = Enchantism.MOD_ID,
+    bus = Mod.EventBusSubscriber.Bus.MOD,
+    value = Dist.CLIENT
 )
 public final class ClientModEvents
 {
