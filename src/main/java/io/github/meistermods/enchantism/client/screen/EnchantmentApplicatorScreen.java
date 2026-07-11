@@ -54,7 +54,7 @@ public final class EnchantmentApplicatorScreen
     }
 
     graphics.blit(
-        TEXTURE, this.leftPos + 122, this.topPos + 34, 212, 0, progressWidth, PROGRESS_HEIGHT);
+        TEXTURE, this.leftPos + 119, this.topPos + 34, 212, 0, progressWidth, PROGRESS_HEIGHT);
   }
 
   private void renderElementCostTooltips(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -107,7 +107,7 @@ public final class EnchantmentApplicatorScreen
 
         int x = elementStartX + column * 18;
 
-        int y = elementStartY + row * 18 - 8;
+        int y = elementStartY + row * 18;
 
         graphics.drawString(this.font, Integer.toString(cost), x, y, 0x606060, false);
       }
