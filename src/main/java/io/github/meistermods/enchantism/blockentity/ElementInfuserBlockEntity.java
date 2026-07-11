@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import io.github.meistermods.enchantism.element.ElementHelper;
-import io.github.meistermods.enchantism.element.ElementType;
+import io.github.meistermods.enchantism.element.ElementMaterialData;
 import io.github.meistermods.enchantism.item.ElementContainerItem;
 import io.github.meistermods.enchantism.menu.ElementInfuserMenu;
 import io.github.meistermods.enchantism.registry.ModBlockEntities;
@@ -131,83 +131,95 @@ public final class ElementInfuserBlockEntity
     }
 
     private boolean canProcess()
+{
+    ItemStack material =
+            this.items.get(MATERIAL_SLOT);
+
+    ItemStack container =
+            this.items.get(CONTAINER_SLOT);
+
+    if (material.isEmpty())
     {
-        ItemStack material =
-                this.items.get(MATERIAL_SLOT);
-
-        ItemStack container =
-                this.items.get(CONTAINER_SLOT);
-
-        if (material.isEmpty())
-        {
-            return false;
-        }
-
-        if (!(container.getItem() instanceof ElementContainerItem))
-        {
-            return false;
-        }
-
-        ElementType materialElement =
-                ElementHelper.getElementType(material);
-
-        if (materialElement == ElementType.EMPTY)
-        {
-            return false;
-        }
-
-        if (!ElementContainerItem.canAccept(
-                container,
-                materialElement
-        ))
-        {
-            return false;
-        }
-
-        return ElementContainerItem.getElementAmount(container)
-                < ElementContainerItem.MAX_ELEMENT_AMOUNT;
+        return false;
     }
+
+    if (!(container.getItem() instanceof ElementContainerItem))
+    {
+        return false;
+    }
+
+    ElementMaterialData materialData =
+            ElementHelper.getMaterialData(material);
+
+    if (materialData == null)
+    {
+        return false;
+    }
+
+    if (!ElementContainerItem.canAccept(
+            container,
+            materialData.elementType()
+    ))
+    {
+        return false;
+    }
+
+    int currentAmount =
+            ElementContainerItem.getElementAmount(container);
+
+    long resultAmount =
+            (long) currentAmount
+                    + materialData.amount();
+
+    return resultAmount
+            <= ElementContainerItem.MAX_ELEMENT_AMOUNT;
+}
 
     private void process()
+{
+    if (!this.canProcess())
     {
-        if (!this.canProcess())
-        {
-            return;
-        }
-
-        ItemStack material =
-                this.items.get(MATERIAL_SLOT);
-
-        ItemStack container =
-                this.items.get(CONTAINER_SLOT);
-
-        ElementType materialElement =
-                ElementHelper.getElementType(material);
-
-        boolean success =
-                ElementContainerItem.addElement(
-                        container,
-                        materialElement,
-                        1
-                );
-
-        if (!success)
-        {
-            return;
-        }
-
-        material.shrink(1);
-
-        if (material.isEmpty())
-        {
-            this.items.set(
-                    MATERIAL_SLOT,
-                    ItemStack.EMPTY
-            );
-        }
-
-        this.setChanged();
+        return;
     }
+
+    ItemStack material =
+            this.items.get(MATERIAL_SLOT);
+
+    ItemStack container =
+            this.items.get(CONTAINER_SLOT);
+
+    ElementMaterialData materialData =
+            ElementHelper.getMaterialData(material);
+
+    if (materialData == null)
+    {
+        return;
+    }
+
+    boolean success =
+            ElementContainerItem.addElement(
+                    container,
+                    materialData.elementType(),
+                    materialData.amount()
+            );
+
+    if (!success)
+    {
+        return;
+    }
+
+    material.shrink(1);
+
+    if (material.isEmpty())
+    {
+        this.items.set(
+                MATERIAL_SLOT,
+                ItemStack.EMPTY
+        );
+    }
+
+    this.setChanged();
+}
 
     public ContainerData getData()
     {
@@ -411,8 +423,7 @@ public final class ElementInfuserBlockEntity
         return switch (slot)
         {
             case MATERIAL_SLOT ->
-                    ElementHelper.getElementType(stack)
-                            != ElementType.EMPTY;
+        ElementHelper.isValidMaterial(stack);
 
             case CONTAINER_SLOT ->
                     stack.getItem()

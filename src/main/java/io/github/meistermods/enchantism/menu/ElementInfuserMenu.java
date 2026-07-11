@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 
 import io.github.meistermods.enchantism.blockentity.ElementInfuserBlockEntity;
 import io.github.meistermods.enchantism.element.ElementHelper;
-import io.github.meistermods.enchantism.element.ElementType;
 import io.github.meistermods.enchantism.item.ElementContainerItem;
 import io.github.meistermods.enchantism.registry.ModMenus;
 import net.minecraft.core.BlockPos;
@@ -116,13 +115,12 @@ public final class ElementInfuserMenu extends AbstractContainerMenu
                 )
                 {
                     @Override
-                    public boolean mayPlace(
-                            @Nonnull ItemStack stack
-                    )
-                    {
-                        return ElementHelper.getElementType(stack)
-                                != ElementType.EMPTY;
-                    }
+public boolean mayPlace(
+        @Nonnull ItemStack stack
+)
+{
+    return ElementHelper.isValidMaterial(stack);
+}
                 }
         );
 
@@ -302,19 +300,18 @@ public final class ElementInfuserMenu extends AbstractContainerMenu
                 return ItemStack.EMPTY;
             }
         }
-        else if (ElementHelper.getElementType(sourceStack)
-                != ElementType.EMPTY)
-        {
-            if (!this.moveItemStackTo(
-                    sourceStack,
-                    ElementInfuserBlockEntity.MATERIAL_SLOT,
-                    ElementInfuserBlockEntity.MATERIAL_SLOT + 1,
-                    false
-            ))
-            {
-                return ItemStack.EMPTY;
-            }
-        }
+        else if (ElementHelper.isValidMaterial(sourceStack))
+{
+    if (!this.moveItemStackTo(
+            sourceStack,
+            ElementInfuserBlockEntity.MATERIAL_SLOT,
+            ElementInfuserBlockEntity.MATERIAL_SLOT + 1,
+            false
+    ))
+    {
+        return ItemStack.EMPTY;
+    }
+}
         else if (index >= PLAYER_INVENTORY_START
                 && index < PLAYER_INVENTORY_END)
         {

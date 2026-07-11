@@ -2,6 +2,8 @@ package io.github.meistermods.enchantism.item;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import io.github.meistermods.enchantism.element.ElementType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +19,7 @@ public final class ElementContainerItem extends Item
     private static final String ELEMENT_TAG = "Element";
     private static final String AMOUNT_TAG = "Amount";
 
-    public static final int MAX_ELEMENT_AMOUNT = 64;
+    public static final int MAX_ELEMENT_AMOUNT = 1_000_000;
 
     public ElementContainerItem(Properties properties)
     {
@@ -100,31 +102,43 @@ public final class ElementContainerItem extends Item
     }
 
     public static boolean addElement(
-        ItemStack container,
-        ElementType materialElement,
+        @Nonnull ItemStack container,
+        @Nonnull ElementType materialElement,
         int amount
-    )
-    {
-        if (!canAccept(container, materialElement))
+        )
         {
-            return false;
+        if (amount <= 0)
+        {
+                return false;
         }
 
-        int currentAmount = getElementAmount(container);
-
-        if (currentAmount >= MAX_ELEMENT_AMOUNT)
+        if (!canAccept(
+                container,
+                materialElement
+        ))
         {
-            return false;
+                return false;
+        }
+
+        int currentAmount =
+                getElementAmount(container);
+
+        long newAmount =
+                (long) currentAmount + amount;
+
+        if (newAmount > MAX_ELEMENT_AMOUNT)
+        {
+                return false;
         }
 
         setElement(
-            container,
-            materialElement,
-            currentAmount + amount
+                container,
+                materialElement,
+                (int) newAmount
         );
 
         return true;
-    }
+        }
 
     @Override
     public void appendHoverText(
@@ -155,12 +169,24 @@ public final class ElementContainerItem extends Item
             ).withStyle(ChatFormatting.AQUA)
         );
 
-        tooltip.add(
-            Component.translatable(
-                "tooltip.enchantism.element_container.amount",
-                amount,
-                MAX_ELEMENT_AMOUNT
-            ).withStyle(ChatFormatting.GRAY)
+        String formattedAmount =
+        String.format(
+                "%,d",
+                amount
         );
+
+String formattedMaximum =
+        String.format(
+                "%,d",
+                MAX_ELEMENT_AMOUNT
+        );
+
+tooltip.add(
+        Component.translatable(
+                "tooltip.enchantism.element_container.amount",
+                formattedAmount,
+                formattedMaximum
+        ).withStyle(ChatFormatting.GRAY)
+);
     }
 }
