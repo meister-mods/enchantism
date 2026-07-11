@@ -1,0 +1,3 @@
+.\gradlew.bat --refresh-dependencies
+.\gradlew.bat genVSCodeRuns
+.\gradlew.bat build
