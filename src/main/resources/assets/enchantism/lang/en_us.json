@@ -7,11 +7,17 @@
   "container.enchantism.element_infuser": "Element Infusion Table",
 
   "block.enchantism.compressed_cobblestone": "Compressed Cobblestone",
+  
+  "item.enchantism.element_container": "Element Container",
 
   "element.enchantism.empty": "Empty",
   "element.enchantism.stone": "Stone",
   "element.enchantism.wood": "Wood",
   "element.enchantism.dust": "Dust",
+
+  "tooltip.enchantism.element_container.empty": "No element stored",
+  "tooltip.enchantism.element_container.element": "Element: %s",
+  "tooltip.enchantism.element_container.amount": "Stored: %s/%s",
 
   "container.enchantism.option": "Option %1$s: Level %2$s / %3$s material",
   "container.enchantism.no_offer": "No enchantment",

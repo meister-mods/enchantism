@@ -8,10 +8,16 @@
 
   "block.enchantism.compressed_cobblestone": "압축 조약돌",
 
+  "item.enchantism.element_container": "원소 보관기",
+
   "element.enchantism.empty": "비어 있음",
   "element.enchantism.stone": "돌",
   "element.enchantism.wood": "나무",
   "element.enchantism.dust": "먼지",
+
+  "tooltip.enchantism.element_container.empty": "저장된 원소 없음",
+  "tooltip.enchantism.element_container.element": "원소: %s",
+  "tooltip.enchantism.element_container.amount": "저장량: %s/%s",
   
   "container.enchantism.option": "%1$s단계: 레벨 %2$s / 재료 %3$s개",
   "container.enchantism.no_offer": "인챈트 불가",

@@ -35,7 +35,7 @@ public final class ElementInfuserBlockEntity
     public static final int CONTAINER_SLOT = 1;
 
     public static final int SLOT_COUNT = 2;
-    public static final int DEFAULT_PROCESS_TIME = 200;
+    public static final int DEFAULT_PROCESS_TIME = 20;
 
     private final NonNullList<ItemStack> items =
             NonNullList.withSize(
