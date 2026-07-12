@@ -22,11 +22,11 @@
   "element.enchantism.mystical": "Mystical",
 
   "enchantment.enchantism.lignification": "Lignification",
-  "enchantment.enchantism.lignification.desc": "Grants Resistance and Fire Resistance while crouching.",
+  "enchantment.enchantism.lignification.desc": "Grants strong protection while crouching.",
   "enchantment.enchantism.stealth": "Stealth",
-  "enchantment.enchantism.stealth.desc": "While crouching, hostile monsters do not initiate attacks against you.",
+  "enchantment.enchantism.stealth.desc": "Prevents hostile mobs from targeting you first while crouching.",
   "enchantment.enchantism.meditation": "Meditation",
-  "enchantment.enchantism.meditation.desc": "Grants Regeneration at the same level as the enchantment while crouching and remaining still. After meditating for at least 3 seconds, the effect persists for 3 seconds after moving or standing up.",
+  "enchantment.enchantism.meditation.desc": "Grants Regeneration while crouching and remaining still. After meditating for 3 seconds, the effect lasts for 3 seconds after moving or standing up.",
 
   "tooltip.enchantism.element_container.empty": "No element stored",
   "tooltip.enchantism.element_container.element": "Element: %s",

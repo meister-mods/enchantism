@@ -1,11 +1,13 @@
 package io.github.meistermods.enchantism.enchantment;
 
 import io.github.meistermods.enchantism.Enchantism;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.TickEvent;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -13,55 +15,128 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Enchantism.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class LignificationEffectHandler {
   /*
-   * The effect is kept short so it ends soon after
-   * the player stops crouching.
+   * Minecraft enchantment protection is capped at 20 points.
+   * Each point corresponds to 4% damage reduction.
    */
-  private static final int EFFECT_DURATION_TICKS = 10;
-  private static final int REFRESH_THRESHOLD_TICKS = 4;
+  private static final int MAX_PROTECTION_POINTS = 20;
+  private static final float PROTECTION_DIVISOR = 25.0F;
+
+  private static final int GENERAL_PROTECTION_MULTIPLIER = 1;
+  private static final int SPECIALIZED_PROTECTION_MULTIPLIER = 2;
+  private static final int FALL_PROTECTION_MULTIPLIER = 3;
 
   private LignificationEffectHandler() {}
 
   @SubscribeEvent
-  public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-    if (event.phase != TickEvent.Phase.END) {
+  public static void onLivingHurt(LivingHurtEvent event) {
+    if (!(event.getEntity() instanceof Player player)) {
       return;
     }
-
-    Player player = event.player;
 
     if (player.level().isClientSide) {
       return;
     }
 
-    if (!EnchantmentEffectHelper.isLignificationActive(player)) {
+    if (!player.isCrouching()) {
       return;
     }
 
-    maintainEffect(player, MobEffects.DAMAGE_RESISTANCE, 0);
+    int lignificationLevel = EnchantmentEffectHelper.getTotalLignificationLevel(player);
 
-    maintainEffect(player, MobEffects.FIRE_RESISTANCE, 0);
+    if (lignificationLevel <= 0) {
+      return;
+    }
+
+    DamageSource source = event.getSource();
+
+    /*
+     * Damage explicitly configured to bypass enchantments
+     * must also bypass Lignification.
+     */
+    if (source.is(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
+      return;
+    }
+
+    int lignificationProtection = calculateLignificationProtection(lignificationLevel, source);
+
+    if (lignificationProtection <= 0) {
+      return;
+    }
+
+    /*
+     * Obtain existing vanilla enchantment protection so that
+     * Lignification and normal enchantments share the same cap.
+     */
+    int existingProtection = EnchantmentHelper.getDamageProtection(player.getArmorSlots(), source);
+
+    int clampedExistingProtection = Mth.clamp(existingProtection, 0, MAX_PROTECTION_POINTS);
+
+    int combinedProtection =
+        Mth.clamp(existingProtection + lignificationProtection, 0, MAX_PROTECTION_POINTS);
+
+    if (combinedProtection <= clampedExistingProtection) {
+      return;
+    }
+
+    /*
+     * Vanilla protection will process existingProtection later.
+     * Apply only the additional ratio required to reach
+     * combinedProtection.
+     */
+    float existingFactor = 1.0F - (float) clampedExistingProtection / PROTECTION_DIVISOR;
+
+    float combinedFactor = 1.0F - (float) combinedProtection / PROTECTION_DIVISOR;
+
+    float additionalFactor = combinedFactor / existingFactor;
+
+    event.setAmount(Math.max(0.0F, event.getAmount() * additionalFactor));
   }
 
-  private static void maintainEffect(Player player, MobEffect effect, int amplifier) {
-    MobEffectInstance currentEffect = player.getEffect(effect);
+  private static int calculateLignificationProtection(int level, DamageSource source) {
+    /*
+     * Equivalent to ordinary Protection of the same level.
+     * Applies to nearly every source that does not bypass
+     * enchantments.
+     */
+    int protectionPoints = level * GENERAL_PROTECTION_MULTIPLIER;
 
     /*
-     * Do not overwrite a stronger external effect.
+     * Equivalent to specialized protection enchantments.
+     * Multiple classifications may apply to one source.
      */
-    if (currentEffect != null && currentEffect.getAmplifier() > amplifier) {
-      return;
+    if (source.is(DamageTypeTags.IS_PROJECTILE)) {
+      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
+    }
+
+    if (source.is(DamageTypeTags.IS_FIRE)) {
+      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
+    }
+
+    if (source.is(DamageTypeTags.IS_EXPLOSION)) {
+      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
+    }
+
+    if (source.is(DamageTypeTags.IS_FALL)) {
+      protectionPoints += level * FALL_PROTECTION_MULTIPLIER;
     }
 
     /*
-     * Do not shorten an equal-strength external effect.
+     * Minecraft 1.20.1 does not expose a separate vanilla
+     * Magic Protection enchantment. Enchantism defines
+     * magic-like damage as an additional specialized category.
      */
-    if (currentEffect != null
-        && currentEffect.getAmplifier() == amplifier
-        && currentEffect.getDuration() > REFRESH_THRESHOLD_TICKS) {
-      return;
+    if (isMagicLikeDamage(source)) {
+      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
     }
 
-    player.addEffect(
-        new MobEffectInstance(effect, EFFECT_DURATION_TICKS, amplifier, true, false, true));
+    return protectionPoints;
+  }
+
+  private static boolean isMagicLikeDamage(DamageSource source) {
+    return source.is(DamageTypes.MAGIC)
+        || source.is(DamageTypes.INDIRECT_MAGIC)
+        || source.is(DamageTypes.WITHER)
+        || source.is(DamageTypes.DRAGON_BREATH)
+        || source.is(DamageTypes.SONIC_BOOM);
   }
 }
