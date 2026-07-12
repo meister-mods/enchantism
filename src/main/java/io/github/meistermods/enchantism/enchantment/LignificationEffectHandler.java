@@ -21,7 +21,6 @@ public final class LignificationEffectHandler {
   private static final int MAX_PROTECTION_POINTS = 20;
   private static final float PROTECTION_DIVISOR = 25.0F;
 
-  private static final int GENERAL_PROTECTION_MULTIPLIER = 1;
   private static final int SPECIALIZED_PROTECTION_MULTIPLIER = 2;
   private static final int FALL_PROTECTION_MULTIPLIER = 3;
 
@@ -71,8 +70,13 @@ public final class LignificationEffectHandler {
 
     int clampedExistingProtection = Mth.clamp(existingProtection, 0, MAX_PROTECTION_POINTS);
 
-    int combinedProtection =
-        Mth.clamp(existingProtection + lignificationProtection, 0, MAX_PROTECTION_POINTS);
+int combinedProtection =
+    Mth.clamp(
+        Math.max(
+            existingProtection,
+            lignificationProtection),
+        0,
+        MAX_PROTECTION_POINTS);
 
     if (combinedProtection <= clampedExistingProtection) {
       return;
@@ -92,45 +96,29 @@ public final class LignificationEffectHandler {
     event.setAmount(Math.max(0.0F, event.getAmount() * additionalFactor));
   }
 
-  private static int calculateLignificationProtection(int level, DamageSource source) {
-    /*
-     * Equivalent to ordinary Protection of the same level.
-     * Applies to nearly every source that does not bypass
-     * enchantments.
-     */
-    int protectionPoints = level * GENERAL_PROTECTION_MULTIPLIER;
+  private static int calculateLignificationProtection(
+    int level, DamageSource source) {
+  int protectionPoints = level;
 
-    /*
-     * Equivalent to specialized protection enchantments.
-     * Multiple classifications may apply to one source.
-     */
-    if (source.is(DamageTypeTags.IS_PROJECTILE)) {
-      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
-    }
-
-    if (source.is(DamageTypeTags.IS_FIRE)) {
-      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
-    }
-
-    if (source.is(DamageTypeTags.IS_EXPLOSION)) {
-      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
-    }
-
-    if (source.is(DamageTypeTags.IS_FALL)) {
-      protectionPoints += level * FALL_PROTECTION_MULTIPLIER;
-    }
-
-    /*
-     * Minecraft 1.20.1 does not expose a separate vanilla
-     * Magic Protection enchantment. Enchantism defines
-     * magic-like damage as an additional specialized category.
-     */
-    if (isMagicLikeDamage(source)) {
-      protectionPoints += level * SPECIALIZED_PROTECTION_MULTIPLIER;
-    }
-
-    return protectionPoints;
+  if (source.is(DamageTypeTags.IS_PROJECTILE)
+      || source.is(DamageTypeTags.IS_FIRE)
+      || source.is(DamageTypeTags.IS_EXPLOSION)
+      || isMagicLikeDamage(source)) {
+    protectionPoints =
+        Math.max(
+            protectionPoints,
+            level * SPECIALIZED_PROTECTION_MULTIPLIER);
   }
+
+  if (source.is(DamageTypeTags.IS_FALL)) {
+    protectionPoints =
+        Math.max(
+            protectionPoints,
+            level * FALL_PROTECTION_MULTIPLIER);
+  }
+
+  return protectionPoints;
+}
 
   private static boolean isMagicLikeDamage(DamageSource source) {
     return source.is(DamageTypes.MAGIC)

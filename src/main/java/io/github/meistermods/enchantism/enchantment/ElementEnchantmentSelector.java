@@ -1,10 +1,11 @@
 package io.github.meistermods.enchantism.enchantment;
 
-import io.github.meistermods.enchantism.element.ElementType;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+
+import io.github.meistermods.enchantism.element.ElementType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -26,7 +27,7 @@ public final class ElementEnchantmentSelector {
   private static final int ADVANCED_TIER_WEIGHT = 35;
   private static final int RARE_TIER_WEIGHT = 10;
 
-  private static final int[] FALLBACK_LEVEL_WEIGHTS = {60, 22, 10, 5, 3};
+  private static final int[] FALLBACK_LEVEL_WEIGHTS = {60, 25, 10, 5, 0};
 
   private static final List<ElementEnchantmentRecipe> RECIPES = new ArrayList<>();
 

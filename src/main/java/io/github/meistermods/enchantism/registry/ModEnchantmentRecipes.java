@@ -1,11 +1,12 @@
 package io.github.meistermods.enchantism.registry;
 
+import java.util.Map;
+import java.util.Set;
+
 import io.github.meistermods.enchantism.element.ElementType;
 import io.github.meistermods.enchantism.enchantment.CatalystPreference;
 import io.github.meistermods.enchantism.enchantment.ElementEnchantmentRecipe;
 import io.github.meistermods.enchantism.enchantment.ElementEnchantmentSelector;
-import java.util.Map;
-import java.util.Set;
 
 public final class ModEnchantmentRecipes {
   private static boolean registered;
@@ -27,7 +28,7 @@ public final class ModEnchantmentRecipes {
         new ElementEnchantmentRecipe(
             ModEnchantments.LIGNIFICATION.get(),
             Map.of(ElementType.WOOD, 3.0, ElementType.LIFE, 2.0),
-            350,
+            450,
             Map.of(
                 ElementType.WATER,
                 new CatalystPreference(50, 0.30),
