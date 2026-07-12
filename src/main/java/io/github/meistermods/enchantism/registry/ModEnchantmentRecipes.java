@@ -1,12 +1,11 @@
 package io.github.meistermods.enchantism.registry;
 
-import java.util.Map;
-import java.util.Set;
-
 import io.github.meistermods.enchantism.element.ElementType;
 import io.github.meistermods.enchantism.enchantment.CatalystPreference;
 import io.github.meistermods.enchantism.enchantment.ElementEnchantmentRecipe;
 import io.github.meistermods.enchantism.enchantment.ElementEnchantmentSelector;
+import java.util.Map;
+import java.util.Set;
 
 public final class ModEnchantmentRecipes {
   private static boolean registered;

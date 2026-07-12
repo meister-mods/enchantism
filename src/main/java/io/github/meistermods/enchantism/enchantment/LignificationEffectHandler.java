@@ -70,13 +70,8 @@ public final class LignificationEffectHandler {
 
     int clampedExistingProtection = Mth.clamp(existingProtection, 0, MAX_PROTECTION_POINTS);
 
-int combinedProtection =
-    Mth.clamp(
-        Math.max(
-            existingProtection,
-            lignificationProtection),
-        0,
-        MAX_PROTECTION_POINTS);
+    int combinedProtection =
+        Mth.clamp(Math.max(existingProtection, lignificationProtection), 0, MAX_PROTECTION_POINTS);
 
     if (combinedProtection <= clampedExistingProtection) {
       return;
@@ -96,29 +91,22 @@ int combinedProtection =
     event.setAmount(Math.max(0.0F, event.getAmount() * additionalFactor));
   }
 
-  private static int calculateLignificationProtection(
-    int level, DamageSource source) {
-  int protectionPoints = level;
+  private static int calculateLignificationProtection(int level, DamageSource source) {
+    int protectionPoints = level;
 
-  if (source.is(DamageTypeTags.IS_PROJECTILE)
-      || source.is(DamageTypeTags.IS_FIRE)
-      || source.is(DamageTypeTags.IS_EXPLOSION)
-      || isMagicLikeDamage(source)) {
-    protectionPoints =
-        Math.max(
-            protectionPoints,
-            level * SPECIALIZED_PROTECTION_MULTIPLIER);
+    if (source.is(DamageTypeTags.IS_PROJECTILE)
+        || source.is(DamageTypeTags.IS_FIRE)
+        || source.is(DamageTypeTags.IS_EXPLOSION)
+        || isMagicLikeDamage(source)) {
+      protectionPoints = Math.max(protectionPoints, level * SPECIALIZED_PROTECTION_MULTIPLIER);
+    }
+
+    if (source.is(DamageTypeTags.IS_FALL)) {
+      protectionPoints = Math.max(protectionPoints, level * FALL_PROTECTION_MULTIPLIER);
+    }
+
+    return protectionPoints;
   }
-
-  if (source.is(DamageTypeTags.IS_FALL)) {
-    protectionPoints =
-        Math.max(
-            protectionPoints,
-            level * FALL_PROTECTION_MULTIPLIER);
-  }
-
-  return protectionPoints;
-}
 
   private static boolean isMagicLikeDamage(DamageSource source) {
     return source.is(DamageTypes.MAGIC)

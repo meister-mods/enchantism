@@ -6,6 +6,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -22,8 +25,11 @@ public final class MeditationEffectHandler {
   private static final String LINGER_TICKS_TAG = "EnchantismMeditationLingerTicks";
   private static final String EFFECT_APPLIED_TAG = "EnchantismMeditationEffectApplied";
   private static final String EFFECT_AMPLIFIER_TAG = "EnchantismMeditationEffectAmplifier";
+  private static final String HAND_ACTION_TICKS_TAG = "EnchantismMeditationHandActionTicks";
+
   private static final int REQUIRED_CROUCH_TICKS = 60;
   private static final int LINGER_DURATION_TICKS = 60;
+  private static final int HAND_ACTION_BLOCK_TICKS = 2;
 
   /*
    * Regeneration I heals once every 50 ticks.
@@ -65,7 +71,20 @@ public final class MeditationEffectHandler {
 
     tickLingeringTimer(data);
 
+    boolean performingHandAction =
+        player.isUsingItem() || player.swinging || data.getInt(HAND_ACTION_TICKS_TAG) > 0;
+
+    if (performingHandAction) {
+      interruptMeditationForHandAction(player, data, meditationLevel);
+
+      tickHandActionTimer(data);
+      return;
+    }
+
+    tickHandActionTimer(data);
+
     boolean crouching = player.isCrouching();
+
     boolean wasCrouching = data.getBoolean(WAS_CROUCHING_TAG);
 
     int crouchTicks = data.getInt(CROUCH_TICKS_TAG);
@@ -106,7 +125,6 @@ public final class MeditationEffectHandler {
       crouchTicks++;
 
       data.putInt(CROUCH_TICKS_TAG, crouchTicks);
-
       data.putBoolean(WAS_CROUCHING_TAG, true);
 
       if (crouchTicks >= REQUIRED_CROUCH_TICKS) {
@@ -143,9 +161,7 @@ public final class MeditationEffectHandler {
     setAnchorPosition(player, data);
 
     data.putInt(CROUCH_TICKS_TAG, 1);
-
     data.putBoolean(WAS_CROUCHING_TAG, true);
-
     data.putBoolean(CHARGED_TAG, false);
   }
 
@@ -153,9 +169,7 @@ public final class MeditationEffectHandler {
     setAnchorPosition(player, data);
 
     data.putInt(CROUCH_TICKS_TAG, 0);
-
     data.putBoolean(WAS_CROUCHING_TAG, true);
-
     data.putBoolean(CHARGED_TAG, false);
   }
 
@@ -239,7 +253,6 @@ public final class MeditationEffectHandler {
         new MobEffectInstance(MobEffects.REGENERATION, duration, amplifier, true, false, true));
 
     data.putBoolean(EFFECT_APPLIED_TAG, true);
-
     data.putInt(EFFECT_AMPLIFIER_TAG, amplifier);
   }
 
@@ -303,5 +316,119 @@ public final class MeditationEffectHandler {
     clearCrouchingState(data);
     clearEffectState(data);
     data.remove(LINGER_TICKS_TAG);
+    data.remove(HAND_ACTION_TICKS_TAG);
+  }
+
+  @SubscribeEvent
+  public static void onAttackEntity(AttackEntityEvent event) {
+    markHandAction(event.getEntity());
+  }
+
+  @SubscribeEvent
+  public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+    markHandAction(event.getEntity());
+  }
+
+  @SubscribeEvent
+  public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+    markHandAction(event.getEntity());
+  }
+
+  @SubscribeEvent
+  public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+    markHandAction(event.getEntity());
+  }
+
+  @SubscribeEvent
+  public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
+    markHandAction(event.getEntity());
+  }
+
+  @SubscribeEvent
+  public static void onEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+    markHandAction(event.getEntity());
+  }
+
+  @SubscribeEvent
+  public static void onUseItemStart(LivingEntityUseItemEvent.Start event) {
+    if (!(event.getEntity() instanceof Player player)) {
+      return;
+    }
+
+    markHandAction(player);
+  }
+
+  private static void markHandAction(Player player) {
+    if (player.level().isClientSide) {
+      return;
+    }
+
+    /*
+     * Only store the interruption when the player actually has
+     * Meditation. This avoids unnecessary persistent data.
+     */
+    if (EnchantmentEffectHelper.getMeditationLevel(player) <= 0) {
+      return;
+    }
+
+    player.getPersistentData().putInt(HAND_ACTION_TICKS_TAG, HAND_ACTION_BLOCK_TICKS);
+  }
+
+  private static void interruptMeditationForHandAction(
+      Player player, CompoundTag data, int meditationLevel) {
+    boolean wasCrouching = data.getBoolean(WAS_CROUCHING_TAG);
+
+    /*
+     * There is no active stationary meditation sequence.
+     * Existing lingering regeneration is not canceled.
+     */
+    if (!wasCrouching) {
+      return;
+    }
+
+    int crouchTicks = data.getInt(CROUCH_TICKS_TAG);
+
+    boolean charged = data.getBoolean(CHARGED_TAG);
+
+    boolean lingering = isLingering(data);
+
+    /*
+     * A hand action after completing meditation starts
+     * the normal three-second lingering effect.
+     */
+    if (charged || crouchTicks >= REQUIRED_CROUCH_TICKS) {
+      startLingeringRegeneration(player, data, meditationLevel);
+
+      lingering = true;
+    }
+
+    /*
+     * Before the three-second threshold, the regeneration
+     * supplied by Meditation is immediately canceled.
+     */
+    if (!lingering) {
+      removeMeditationRegeneration(player, data);
+    }
+
+    /*
+     * Continuing to crouch allows a new meditation sequence
+     * after the hand action finishes.
+     */
+    if (player.isCrouching()) {
+      resetMeditationAtCurrentPosition(player, data);
+    } else {
+      clearCrouchingState(data);
+    }
+  }
+
+  private static void tickHandActionTimer(CompoundTag data) {
+    int ticks = data.getInt(HAND_ACTION_TICKS_TAG);
+
+    if (ticks <= 1) {
+      data.remove(HAND_ACTION_TICKS_TAG);
+      return;
+    }
+
+    data.putInt(HAND_ACTION_TICKS_TAG, ticks - 1);
   }
 }
