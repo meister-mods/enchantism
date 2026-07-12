@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class ModGameplayEvents {
   private ModGameplayEvents() {}
 
-  /** Prevents hostile monsters from initially selecting a crouching player with Lignification. */
+  /** Prevents hostile monsters from initially selecting a crouching player with Stealth. */
   @SubscribeEvent
   public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
     if (!(event.getEntity() instanceof Mob mob)) {
@@ -32,7 +32,7 @@ public final class ModGameplayEvents {
       return;
     }
 
-    if (!EnchantmentEffectHelper.isLignificationActive(player)) {
+    if (!EnchantmentEffectHelper.isStealthActive(player)) {
       return;
     }
 
@@ -63,7 +63,7 @@ public final class ModGameplayEvents {
       return;
     }
 
-    if (!EnchantmentEffectHelper.isLignificationActive(player)) {
+    if (!EnchantmentEffectHelper.isStealthActive(player)) {
       return;
     }
 

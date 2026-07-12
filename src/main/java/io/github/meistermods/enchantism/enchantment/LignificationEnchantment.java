@@ -1,11 +1,9 @@
 package io.github.meistermods.enchantism.enchantment;
 
-import io.github.meistermods.enchantism.registry.ModEnchantments;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
-@SuppressWarnings({"null"})
 public final class LignificationEnchantment extends Enchantment {
   public LignificationEnchantment() {
     super(Rarity.RARE, EnchantmentCategory.ARMOR_CHEST, new EquipmentSlot[] {EquipmentSlot.CHEST});
@@ -39,10 +37,5 @@ public final class LignificationEnchantment extends Enchantment {
   @Override
   public boolean isTradeable() {
     return false;
-  }
-
-  @Override
-  protected boolean checkCompatibility(Enchantment other) {
-    return other != ModEnchantments.MEDITATION.get() && super.checkCompatibility(other);
   }
 }

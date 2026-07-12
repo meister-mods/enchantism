@@ -58,5 +58,24 @@ public final class ModEnchantmentRecipes {
             Set.of(ElementType.METAL),
             90.0,
             12.0));
+
+    ElementEnchantmentSelector.registerRecipe(
+        new ElementEnchantmentRecipe(
+            ModEnchantments.STEALTH.get(),
+            Map.of(
+                ElementType.DUST, 3.0,
+                ElementType.MYSTICAL, 2.0),
+            350,
+            Map.of(
+                ElementType.WATER,
+                new CatalystPreference(50, 0.30),
+                ElementType.CRYSTAL,
+                new CatalystPreference(40, 0.30),
+                ElementType.FIRE,
+                new CatalystPreference(50, -0.50)),
+            Set.of(),
+            Set.of(ElementType.METAL),
+            90.0,
+            12.0));
   }
 }

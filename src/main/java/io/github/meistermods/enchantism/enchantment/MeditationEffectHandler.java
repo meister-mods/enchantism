@@ -55,9 +55,9 @@ public final class MeditationEffectHandler {
 
     int meditationLevel = EnchantmentEffectHelper.getMeditationLevel(player);
 
-    boolean hasLignification = EnchantmentEffectHelper.hasLignification(player);
+    boolean hasStealth = EnchantmentEffectHelper.hasStealth(player);
 
-    if (meditationLevel <= 0 || hasLignification) {
+    if (meditationLevel <= 0 || hasStealth) {
       removeMeditationRegeneration(player, data);
       clearMeditationState(data);
       return;
