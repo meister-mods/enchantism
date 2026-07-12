@@ -21,6 +21,9 @@
   "element.enchantism.fire": "Fire",
   "element.enchantism.mystical": "Mystical",
 
+  "enchantment.enchantism.lignification": "Lignification",
+  "enchantment.enchantism.lignification.desc": "While crouching, hostile monsters do not initiate attacks against you.",
+
   "tooltip.enchantism.element_container.empty": "No element stored",
   "tooltip.enchantism.element_container.element": "Element: %s",
   "tooltip.enchantism.element_container.amount": "Stored: %s/%s",

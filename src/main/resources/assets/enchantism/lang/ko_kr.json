@@ -21,6 +21,9 @@
   "element.enchantism.fire": "불",
   "element.enchantism.mystical": "신화",
 
+  "enchantment.enchantism.lignification": "목질화",
+  "enchantment.enchantism.lignification.desc": "웅크리는 동안 적대적 몬스터의 선제 공격 대상이 되지 않습니다.",
+
   "tooltip.enchantism.element_container.empty": "저장된 원소 없음",
   "tooltip.enchantism.element_container.element": "원소: %s",
   "tooltip.enchantism.element_container.amount": "저장량: %s/%s",

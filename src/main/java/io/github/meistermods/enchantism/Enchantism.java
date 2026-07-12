@@ -1,5 +1,6 @@
 package io.github.meistermods.enchantism;
 
+import io.github.meistermods.enchantism.enchantment.ModEnchantmentRecipes;
 import io.github.meistermods.enchantism.registry.ModBlockEntities;
 import io.github.meistermods.enchantism.registry.ModBlocks;
 import io.github.meistermods.enchantism.registry.ModCreativeTabs;
@@ -8,6 +9,7 @@ import io.github.meistermods.enchantism.registry.ModItems;
 import io.github.meistermods.enchantism.registry.ModMenus;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(Enchantism.MOD_ID)
@@ -23,5 +25,11 @@ public final class Enchantism {
     ModMenus.register(modEventBus);
     ModCreativeTabs.register(modEventBus);
     ModEnchantments.register(modEventBus);
+
+    modEventBus.addListener(this::commonSetup);
+  }
+
+  private void commonSetup(FMLCommonSetupEvent event) {
+    event.enqueueWork(ModEnchantmentRecipes::register);
   }
 }

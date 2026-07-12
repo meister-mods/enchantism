@@ -1,12 +1,11 @@
 package io.github.meistermods.enchantism.enchantment;
 
+import io.github.meistermods.enchantism.element.ElementType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-
-import io.github.meistermods.enchantism.element.ElementType;
 import net.minecraft.util.RandomSource;
 
 @SuppressWarnings({"null"})
