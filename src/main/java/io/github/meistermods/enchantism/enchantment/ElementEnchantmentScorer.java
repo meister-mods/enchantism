@@ -3,7 +3,6 @@ package io.github.meistermods.enchantism.enchantment;
 import io.github.meistermods.enchantism.element.ElementType;
 import java.util.Map;
 
-@SuppressWarnings({"null"})
 public final class ElementEnchantmentScorer {
   private ElementEnchantmentScorer() {}
 

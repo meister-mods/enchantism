@@ -41,7 +41,7 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
   public static final int OUTPUT_SLOT = 10;
   public static final int SLOT_COUNT = 11;
 
-  public static final int DEFAULT_PROCESS_TIME = 200;
+  public static final int DEFAULT_PROCESS_TIME = 2;
 
   private static final int[] ELEMENT_COSTS = {100, 90, 80, 70, 60, 50, 40, 30, 20};
 

@@ -32,5 +32,7 @@
   
   "container.enchantism.option": "%1$s단계: 레벨 %2$s / 재료 %3$s개",
   "container.enchantism.no_offer": "인챈트 불가",
-  "itemGroup.enchantism": "인챈티즘"
+  
+  "itemGroup.enchantism": "인챈티즘",
+  "itemGroup.enchantism.enchantments": "인챈티즘 인챈트"
 }

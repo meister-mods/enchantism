@@ -18,7 +18,7 @@ public final class ElementEnchantmentSelector {
    * When selected, the applicator produces a vanilla
    * enchantment based on the dominant input element.
    */
-  private static final double FALLBACK_SCORE = 100.0;
+  private static final double FALLBACK_SCORE = 300.0;
 
   /*
    * The maximum total amount consumed by all nine slots:

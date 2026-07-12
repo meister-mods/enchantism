@@ -32,5 +32,7 @@
 
   "container.enchantism.option": "Option %1$s: Level %2$s / %3$s material",
   "container.enchantism.no_offer": "No enchantment",
-  "itemGroup.enchantism": "Enchantism"
+  
+  "itemGroup.enchantism": "Enchantism",
+  "itemGroup.enchantism.enchantments": "Enchantism Enchantments"
 }

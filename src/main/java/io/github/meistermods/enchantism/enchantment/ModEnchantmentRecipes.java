@@ -6,9 +6,21 @@ import java.util.Map;
 import java.util.Set;
 
 public final class ModEnchantmentRecipes {
+  private static boolean registered;
+
   private ModEnchantmentRecipes() {}
 
   public static void register() {
+    if (registered) {
+      return;
+    }
+
+    registered = true;
+
+    registerEnchants();
+  }
+
+  private static void registerEnchants() {
     ElementEnchantmentSelector.registerRecipe(
         new ElementEnchantmentRecipe(
             ModEnchantments.LIGNIFICATION.get(),

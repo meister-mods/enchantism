@@ -5,10 +5,16 @@ import io.github.meistermods.enchantism.element.ElementType;
 import io.github.meistermods.enchantism.item.ElementContainerItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 @SuppressWarnings("null")
@@ -53,9 +59,50 @@ public final class ModCreativeTabs {
                       })
                   .build());
 
+  public static final RegistryObject<CreativeModeTab> ENCHANTMENTS =
+      CREATIVE_TABS.register(
+          "enchantments",
+          () ->
+              CreativeModeTab.builder()
+                  .title(Component.translatable("itemGroup.enchantism.enchantments"))
+                  .icon(ModCreativeTabs::createEnchantmentTabIcon)
+                  .displayItems((parameters, output) -> addEnchantmentBooks(output))
+                  .build());
+
   private ModCreativeTabs() {}
 
   public static void register(IEventBus modEventBus) {
     CREATIVE_TABS.register(modEventBus);
+  }
+
+  private static void addEnchantmentBooks(CreativeModeTab.Output output) {
+    for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
+      ResourceLocation enchantmentId = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
+
+      if (enchantmentId == null) {
+        continue;
+      }
+
+      if (!enchantmentId.getNamespace().equals(Enchantism.MOD_ID)) {
+        continue;
+      }
+
+      for (int level = enchantment.getMinLevel(); level <= enchantment.getMaxLevel(); level++) {
+        output.accept(createEnchantedBook(enchantment, level));
+      }
+    }
+  }
+
+  private static ItemStack createEnchantedBook(Enchantment enchantment, int level) {
+    ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+
+    EnchantedBookItem.addEnchantment(book, new EnchantmentInstance(enchantment, level));
+
+    return book;
+  }
+
+  private static ItemStack createEnchantmentTabIcon() {
+    return createEnchantedBook(
+        ModEnchantments.LIGNIFICATION.get(), ModEnchantments.LIGNIFICATION.get().getMaxLevel());
   }
 }
