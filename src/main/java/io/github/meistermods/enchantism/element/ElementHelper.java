@@ -111,8 +111,12 @@ public final class ElementHelper {
     register(Items.BLUE_ICE, ElementType.WATER, 270);
     registerMultiple(Items.PRISMARINE_SHARD, ElementType.WATER, 10).add(ElementType.CRYSTAL, 8);
     registerMultiple(Items.NAUTILUS_SHELL, ElementType.WATER, 40).add(ElementType.LIFE, 25);
-
     register(Items.HEART_OF_THE_SEA, ElementType.WATER, 200);
+    register(
+    Items.WATER_BUCKET,
+    ElementType.WATER,
+    100
+);
 
     /*
      * Fire materials
@@ -123,6 +127,11 @@ public final class ElementHelper {
     register(Items.BLAZE_POWDER, ElementType.FIRE, 14);
     register(Items.BLAZE_ROD, ElementType.FIRE, 28);
     registerMultiple(Items.MAGMA_CREAM, ElementType.FIRE, 24).add(ElementType.LIFE, 12);
+    register(
+    Items.LAVA_BUCKET,
+    ElementType.FIRE,
+    150
+);
   }
 
   private ElementHelper() {}
