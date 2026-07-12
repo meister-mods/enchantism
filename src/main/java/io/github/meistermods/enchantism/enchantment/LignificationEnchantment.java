@@ -8,11 +8,8 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 @SuppressWarnings({"null"})
 public final class LignificationEnchantment extends Enchantment {
   public LignificationEnchantment() {
-  super(
-      Rarity.RARE,
-      EnchantmentCategory.ARMOR_CHEST,
-      new EquipmentSlot[] {EquipmentSlot.CHEST});
-}
+    super(Rarity.RARE, EnchantmentCategory.ARMOR_CHEST, new EquipmentSlot[] {EquipmentSlot.CHEST});
+  }
 
   @Override
   public int getMinCost(int level) {
@@ -45,8 +42,7 @@ public final class LignificationEnchantment extends Enchantment {
   }
 
   @Override
-protected boolean checkCompatibility(Enchantment other) {
-  return other != ModEnchantments.MEDITATION.get()
-      && super.checkCompatibility(other);
-}
+  protected boolean checkCompatibility(Enchantment other) {
+    return other != ModEnchantments.MEDITATION.get() && super.checkCompatibility(other);
+  }
 }

@@ -8,10 +8,7 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 @SuppressWarnings({"null"})
 public final class MeditationEnchantment extends Enchantment {
   public MeditationEnchantment() {
-    super(
-        Rarity.RARE,
-        EnchantmentCategory.ARMOR_CHEST,
-        new EquipmentSlot[] {EquipmentSlot.CHEST});
+    super(Rarity.RARE, EnchantmentCategory.ARMOR_CHEST, new EquipmentSlot[] {EquipmentSlot.CHEST});
   }
 
   @Override
@@ -46,7 +43,6 @@ public final class MeditationEnchantment extends Enchantment {
 
   @Override
   protected boolean checkCompatibility(Enchantment other) {
-    return other != ModEnchantments.LIGNIFICATION.get()
-        && super.checkCompatibility(other);
+    return other != ModEnchantments.LIGNIFICATION.get() && super.checkCompatibility(other);
   }
 }

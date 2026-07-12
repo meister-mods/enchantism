@@ -16,11 +16,9 @@ public final class ModEnchantments {
   public static final RegistryObject<Enchantment> LIGNIFICATION =
       ENCHANTMENTS.register("lignification", LignificationEnchantment::new);
 
-      public static final RegistryObject<Enchantment> MEDITATION =
-    ENCHANTMENTS.register(
-        "meditation",
-        MeditationEnchantment::new);
-        
+  public static final RegistryObject<Enchantment> MEDITATION =
+      ENCHANTMENTS.register("meditation", MeditationEnchantment::new);
+
   private ModEnchantments() {}
 
   public static void register(IEventBus modEventBus) {
