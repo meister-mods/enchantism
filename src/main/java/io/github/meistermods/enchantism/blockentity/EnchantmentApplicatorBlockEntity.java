@@ -43,7 +43,7 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
 
   public static final int DEFAULT_PROCESS_TIME = 2;
 
-  private static final int[] ELEMENT_COSTS = {100, 90, 80, 70, 60, 50, 40, 30, 20};
+  private static final int[] ELEMENT_COSTS = {90, 80, 70, 60, 50, 40, 30, 20, 10};
 
   private final NonNullList<ItemStack> items = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 

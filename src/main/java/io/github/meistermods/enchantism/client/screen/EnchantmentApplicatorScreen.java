@@ -106,7 +106,6 @@ public final class EnchantmentApplicatorScreen
         int cost = EnchantmentApplicatorBlockEntity.getElementCost(slot);
 
         int x = elementStartX + column * 18;
-
         int y = elementStartY + row * 18;
 
         graphics.drawString(this.font, Integer.toString(cost), x, y, 0x606060, false);
