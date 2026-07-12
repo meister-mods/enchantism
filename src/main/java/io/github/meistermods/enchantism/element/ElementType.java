@@ -5,16 +5,26 @@ import net.minecraft.network.chat.Component;
 
 @SuppressWarnings({"null"})
 public enum ElementType {
-  EMPTY,
-  STONE,
-  WOOD,
-  DUST,
-  METAL,
-  CRYSTAL,
-  LIFE,
-  WATER,
-  FIRE,
-  MYSTICAL;
+  EMPTY(0xFFFFFF),
+  STONE(0x808080),
+  WOOD(0x8B5A2B),
+  DUST(0xC8B090),
+  METAL(0xB8C0C8),
+  CRYSTAL(0x66DDEE),
+  LIFE(0x55CC55),
+  WATER(0x3F76E4),
+  FIRE(0xFF6A00),
+  MYSTICAL(0xB040FF);
+
+  private final int color;
+
+  ElementType(int color) {
+    this.color = color;
+  }
+
+  public int getColor() {
+    return this.color;
+  }
 
   public String getSerializedName() {
     return this.name().toLowerCase(Locale.ROOT);

@@ -1,6 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "enchantism:item/element_container"
+    "layer0": "enchantism:item/element_container_base",
+    "layer1": "enchantism:item/element_container_fill"
   }
 }
