@@ -1,14 +1,12 @@
 {
-  "block.enchantism.special_enchantment_table": "특수 인챈트 테이블",
-  "container.enchantism.special_enchantment": "특수 인챈트",
   "block.enchantism.enchantment_applicator": "인챈트 부여기",
   "container.enchantism.enchantment_applicator": "인챈트 부여기",
-  "block.enchantism.element_infuser": "원소 주입 테이블",
-  "container.enchantism.element_infuser": "원소 주입 테이블",
+  "block.enchantism.element_infuser": "원소 주입기",
+  "container.enchantism.element_infuser": "원소 주입기",
 
   "block.enchantism.compressed_cobblestone": "압축 조약돌",
 
-  "item.enchantism.element_container": "원소 통",
+  "item.enchantism.element_container": "원소가 담긴 통",
 
   "element.enchantism.empty": "비어 있음",
   "element.enchantism.stone": "돌",

@@ -12,9 +12,9 @@ import net.minecraft.world.item.enchantment.Enchantment;
 
 @SuppressWarnings({"deprecation"})
 public final class ElementEnchantmentSelector {
-  private static final double FALLBACK_SCORE = 150.0;
+  private static final double FALLBACK_SCORE = 250.0;
 
-  private static final int MAX_TOTAL_ELEMENT_AMOUNT = 540;
+  private static final int MAX_TOTAL_ELEMENT_AMOUNT = 450;
 
   private static final int ADVANCED_MIN_DOMINANT_AMOUNT = 180;
   private static final int ADVANCED_MIN_TOTAL_AMOUNT = 300;
@@ -26,7 +26,7 @@ public final class ElementEnchantmentSelector {
   private static final int ADVANCED_TIER_WEIGHT = 35;
   private static final int RARE_TIER_WEIGHT = 10;
 
-  private static final int[] FALLBACK_LEVEL_WEIGHTS = {60, 25, 10, 5, 0};
+  private static final int[] FALLBACK_LEVEL_WEIGHTS = {71, 16, 8, 4, 1};
 
   private static final List<ElementEnchantmentRecipe> RECIPES = new ArrayList<>();
 
@@ -353,7 +353,7 @@ public final class ElementEnchantmentSelector {
       unlockedLevel = Math.max(unlockedLevel, 4);
     }
 
-    if (totalAmount >= 500 && dominantAmount >= 300) {
+    if (totalAmount >= 450 && dominantAmount >= 300) {
       unlockedLevel = Math.max(unlockedLevel, 5);
     }
 

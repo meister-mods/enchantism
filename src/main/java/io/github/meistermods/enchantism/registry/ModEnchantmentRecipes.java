@@ -84,7 +84,7 @@ public final class ModEnchantmentRecipes {
             Map.of(
                 ElementType.METAL, 3.0,
                 ElementType.FIRE, 2.0),
-            450,
+            350,
             Map.of(
                 ElementType.DUST,
                 new CatalystPreference(50, 0.35),
