@@ -13,16 +13,13 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = Enchantism.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class MeditationEffectHandler {
   private static final String CROUCH_TICKS_TAG = "EnchantismMeditationCrouchTicks";
-
   private static final String WAS_CROUCHING_TAG = "EnchantismMeditationWasCrouching";
-
   private static final String ANCHOR_INITIALIZED_TAG = "EnchantismMeditationAnchorInitialized";
-
   private static final String ANCHOR_X_TAG = "EnchantismMeditationAnchorX";
-
   private static final String ANCHOR_Y_TAG = "EnchantismMeditationAnchorY";
-
   private static final String ANCHOR_Z_TAG = "EnchantismMeditationAnchorZ";
+  private static final String CHARGED_TAG = "EnchantismMeditationCharged";
+  private static final String LINGER_TICKS_TAG = "EnchantismMeditationLingerTicks";
 
   private static final int REQUIRED_CROUCH_TICKS = 60;
   private static final int LINGER_DURATION_TICKS = 60;
@@ -72,15 +69,30 @@ public final class MeditationEffectHandler {
 
     int crouchTicks = data.getInt(CROUCH_TICKS_TAG);
 
+    boolean charged = data.getBoolean(CHARGED_TAG);
+
+    int lingerTicks = data.getInt(LINGER_TICKS_TAG);
+
+    /*
+     * A completed meditation continues for up to three seconds,
+     * even if the player moves or stops crouching.
+     */
+    if (lingerTicks > 0) {
+      applyRegeneration(player, meditationLevel, ACTIVE_REFRESH_DURATION_TICKS);
+
+      data.putInt(LINGER_TICKS_TAG, lingerTicks - 1);
+    }
+
     if (crouching) {
       /*
-       * Initialize the meditation position when crouching begins.
+       * Begin a new stationary meditation sequence.
        */
       if (!wasCrouching || !data.getBoolean(ANCHOR_INITIALIZED_TAG)) {
         setAnchorPosition(player, data);
 
         data.putInt(CROUCH_TICKS_TAG, 1);
         data.putBoolean(WAS_CROUCHING_TAG, true);
+        data.putBoolean(CHARGED_TAG, false);
 
         applyRegeneration(player, meditationLevel, ACTIVE_REFRESH_DURATION_TICKS);
 
@@ -88,15 +100,22 @@ public final class MeditationEffectHandler {
       }
 
       /*
-       * Movement cancels the current meditation sequence.
-       * The new position becomes the starting position for
-       * the next stationary sequence.
+       * Movement interrupts stationary meditation.
        */
       if (!isAtAnchorPosition(player, data)) {
         setAnchorPosition(player, data);
 
+        /*
+         * If meditation was already completed, begin the
+         * three-second lingering period.
+         */
+        if (charged || crouchTicks >= REQUIRED_CROUCH_TICKS) {
+          data.putInt(LINGER_TICKS_TAG, LINGER_DURATION_TICKS);
+        }
+
         data.putInt(CROUCH_TICKS_TAG, 0);
         data.putBoolean(WAS_CROUCHING_TAG, true);
+        data.putBoolean(CHARGED_TAG, false);
 
         return;
       }
@@ -104,7 +123,12 @@ public final class MeditationEffectHandler {
       crouchTicks++;
 
       data.putInt(CROUCH_TICKS_TAG, crouchTicks);
+
       data.putBoolean(WAS_CROUCHING_TAG, true);
+
+      if (crouchTicks >= REQUIRED_CROUCH_TICKS) {
+        data.putBoolean(CHARGED_TAG, true);
+      }
 
       applyRegeneration(player, meditationLevel, ACTIVE_REFRESH_DURATION_TICKS);
 
@@ -112,14 +136,18 @@ public final class MeditationEffectHandler {
     }
 
     /*
-     * Lingering regeneration is granted only when the player
-     * completed 60 consecutive stationary crouching ticks.
+     * Standing up after a completed meditation starts
+     * the three-second lingering period.
      */
-    if (wasCrouching && crouchTicks >= REQUIRED_CROUCH_TICKS) {
-      applyRegeneration(player, meditationLevel, LINGER_DURATION_TICKS);
+    if (wasCrouching && (charged || crouchTicks >= REQUIRED_CROUCH_TICKS)) {
+      data.putInt(LINGER_TICKS_TAG, LINGER_DURATION_TICKS);
     }
 
-    clearMeditationState(data);
+    /*
+     * Clear only the stationary meditation state.
+     * Do not remove the lingering timer.
+     */
+    clearCrouchingState(data);
   }
 
   private static boolean isAtAnchorPosition(Player player, CompoundTag data) {
@@ -169,12 +197,18 @@ public final class MeditationEffectHandler {
         new MobEffectInstance(MobEffects.REGENERATION, duration, amplifier, true, false, true));
   }
 
-  private static void clearMeditationState(CompoundTag data) {
+  private static void clearCrouchingState(CompoundTag data) {
     data.remove(CROUCH_TICKS_TAG);
     data.remove(WAS_CROUCHING_TAG);
+    data.remove(CHARGED_TAG);
     data.remove(ANCHOR_INITIALIZED_TAG);
     data.remove(ANCHOR_X_TAG);
     data.remove(ANCHOR_Y_TAG);
     data.remove(ANCHOR_Z_TAG);
+  }
+
+  private static void clearMeditationState(CompoundTag data) {
+    clearCrouchingState(data);
+    data.remove(LINGER_TICKS_TAG);
   }
 }
