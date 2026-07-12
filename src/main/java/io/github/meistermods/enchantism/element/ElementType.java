@@ -13,7 +13,8 @@ public enum ElementType {
   CRYSTAL,
   LIFE,
   WATER,
-  FIRE;
+  FIRE,
+  MYSTICAL;
 
   public String getSerializedName() {
     return this.name().toLowerCase(Locale.ROOT);

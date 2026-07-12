@@ -19,6 +19,7 @@
   "element.enchantism.life": "Life",
   "element.enchantism.water": "Water",
   "element.enchantism.fire": "Fire",
+  "element.enchantism.mystical": "Mystical",
 
   "tooltip.enchantism.element_container.empty": "No element stored",
   "tooltip.enchantism.element_container.element": "Element: %s",

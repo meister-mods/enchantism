@@ -1,7 +1,5 @@
 package io.github.meistermods.enchantism.blockentity;
 
-import org.jetbrains.annotations.Nullable;
-
 import io.github.meistermods.enchantism.element.ElementHelper;
 import io.github.meistermods.enchantism.element.ElementMaterialData;
 import io.github.meistermods.enchantism.element.ElementType;
@@ -25,6 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings({"null"})
 public final class ElementInfuserBlockEntity extends BlockEntity
@@ -124,75 +123,49 @@ public final class ElementInfuserBlockEntity extends BlockEntity
     return resultAmount <= ElementContainerItem.MAX_ELEMENT_AMOUNT;
   }
 
- private void process()
-{
-    if (!this.canProcess())
-    {
-        return;
+  private void process() {
+    if (!this.canProcess()) {
+      return;
     }
 
-    ItemStack material =
-        this.items.get(MATERIAL_SLOT);
+    ItemStack material = this.items.get(MATERIAL_SLOT);
 
-    ItemStack container =
-        this.items.get(CONTAINER_SLOT);
+    ItemStack container = this.items.get(CONTAINER_SLOT);
 
-    ElementType containerElement =
-        ElementContainerItem.getElement(container);
+    ElementType containerElement = ElementContainerItem.getElement(container);
 
-    ElementMaterialData materialData =
-        ElementHelper.getMaterialData(
-            material,
-            containerElement
-        );
+    ElementMaterialData materialData = ElementHelper.getMaterialData(material, containerElement);
 
-    if (materialData == null)
-    {
-        return;
+    if (materialData == null) {
+      return;
     }
 
     boolean success =
         ElementContainerItem.addElement(
-            container,
-            materialData.elementType(),
-            materialData.amount()
-        );
+            container, materialData.elementType(), materialData.amount());
 
-    if (!success)
-    {
-        return;
+    if (!success) {
+      return;
     }
 
     this.consumeMaterial(material);
 
     this.setChanged();
-}
+  }
 
-private void consumeMaterial(
-    ItemStack material
-)
-{
-    if (material.is(Items.WATER_BUCKET)
-        || material.is(Items.LAVA_BUCKET))
-    {
-        this.items.set(
-            MATERIAL_SLOT,
-            new ItemStack(Items.BUCKET)
-        );
+  private void consumeMaterial(ItemStack material) {
+    if (material.is(Items.WATER_BUCKET) || material.is(Items.LAVA_BUCKET)) {
+      this.items.set(MATERIAL_SLOT, new ItemStack(Items.BUCKET));
 
-        return;
+      return;
     }
 
     material.shrink(1);
 
-    if (material.isEmpty())
-    {
-        this.items.set(
-            MATERIAL_SLOT,
-            ItemStack.EMPTY
-        );
+    if (material.isEmpty()) {
+      this.items.set(MATERIAL_SLOT, ItemStack.EMPTY);
     }
-}
+  }
 
   public ContainerData getData() {
     return this.data;

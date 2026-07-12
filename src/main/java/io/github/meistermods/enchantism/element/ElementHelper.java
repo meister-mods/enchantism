@@ -1,9 +1,8 @@
 package io.github.meistermods.enchantism.element;
 
+import io.github.meistermods.enchantism.registry.ModBlocks;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.github.meistermods.enchantism.registry.ModBlocks;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -73,7 +72,7 @@ public final class ElementHelper {
     register(Items.GOLD_INGOT, ElementType.METAL, 36);
     register(Items.COPPER_INGOT, ElementType.METAL, 18);
     register(Items.NETHERITE_SCRAP, ElementType.METAL, 70);
-    register(Items.NETHERITE_INGOT, ElementType.METAL, 4 * 70 + 4 * 36 );
+    register(Items.NETHERITE_INGOT, ElementType.METAL, 4 * 70 + 4 * 36);
 
     /*
      * Crystal materials
@@ -112,11 +111,7 @@ public final class ElementHelper {
     registerMultiple(Items.PRISMARINE_SHARD, ElementType.WATER, 10).add(ElementType.CRYSTAL, 8);
     registerMultiple(Items.NAUTILUS_SHELL, ElementType.WATER, 40).add(ElementType.LIFE, 25);
     register(Items.HEART_OF_THE_SEA, ElementType.WATER, 200);
-    register(
-    Items.WATER_BUCKET,
-    ElementType.WATER,
-    100
-);
+    register(Items.WATER_BUCKET, ElementType.WATER, 100);
 
     /*
      * Fire materials
@@ -127,11 +122,17 @@ public final class ElementHelper {
     register(Items.BLAZE_POWDER, ElementType.FIRE, 14);
     register(Items.BLAZE_ROD, ElementType.FIRE, 28);
     registerMultiple(Items.MAGMA_CREAM, ElementType.FIRE, 24).add(ElementType.LIFE, 12);
-    register(
-    Items.LAVA_BUCKET,
-    ElementType.FIRE,
-    150
-);
+    register(Items.LAVA_BUCKET, ElementType.FIRE, 150);
+
+    /*
+     * Mystical materials
+     */
+    registerMultiple(Items.END_CRYSTAL, ElementType.MYSTICAL, 250).add(ElementType.CRYSTAL, 180);
+    registerMultiple(Items.ENCHANTED_GOLDEN_APPLE, ElementType.MYSTICAL, 500)
+        .add(ElementType.LIFE, 300);
+    registerMultiple(Items.TOTEM_OF_UNDYING, ElementType.MYSTICAL, 750).add(ElementType.LIFE, 500);
+    register(Items.NETHER_STAR, ElementType.MYSTICAL, 2_000);
+    register(Items.DRAGON_EGG, ElementType.MYSTICAL, 10_000);
   }
 
   private ElementHelper() {}
@@ -156,7 +157,7 @@ public final class ElementHelper {
     }
 
     if (stack.is(ModBlocks.COMPRESSED_COBBLESTONE_ITEM.get())) {
-      return resolveFixedElement(ElementType.STONE, 90, containerElement);
+      return resolveSingleElement(ElementType.STONE, 90, containerElement);
     }
 
     ElementMaterialDefinition definition = MATERIALS.get(stack.getItem());
@@ -199,33 +200,37 @@ public final class ElementHelper {
   private static ElementMaterialData resolveTagMaterial(
       ItemStack stack, ElementType containerElement) {
     if (stack.is(ModElementTags.STONE)) {
-      return resolveFixedElement(ElementType.STONE, 10, containerElement);
+      return resolveSingleElement(ElementType.STONE, 10, containerElement);
     }
 
     if (stack.is(ModElementTags.WOOD)) {
-      return resolveFixedElement(ElementType.WOOD, 8, containerElement);
+      return resolveSingleElement(ElementType.WOOD, 8, containerElement);
     }
 
     if (stack.is(ModElementTags.DUST)) {
-      return resolveFixedElement(ElementType.DUST, 3, containerElement);
+      return resolveSingleElement(ElementType.DUST, 3, containerElement);
     }
 
     if (stack.is(ModElementTags.METAL)) {
-      return resolveFixedElement(ElementType.METAL, 12, containerElement);
+      return resolveSingleElement(ElementType.METAL, 12, containerElement);
     }
 
     if (stack.is(ModElementTags.CRYSTAL)) {
-      return resolveFixedElement(ElementType.CRYSTAL, 16, containerElement);
+      return resolveSingleElement(ElementType.CRYSTAL, 16, containerElement);
     }
 
     if (stack.is(ModElementTags.LIFE)) {
-      return resolveFixedElement(ElementType.LIFE, 4, containerElement);
+      return resolveSingleElement(ElementType.LIFE, 4, containerElement);
+    }
+
+    if (stack.is(ModElementTags.MYSTICAL)) {
+      return resolveSingleElement(ElementType.MYSTICAL, 100, containerElement);
     }
 
     return null;
   }
 
-  private static ElementMaterialData resolveFixedElement(
+  private static ElementMaterialData resolveSingleElement(
       ElementType materialElement, int amount, ElementType containerElement) {
     if (containerElement != ElementType.EMPTY && containerElement != materialElement) {
       return null;

@@ -19,6 +19,7 @@
   "element.enchantism.life": "생명",
   "element.enchantism.water": "물",
   "element.enchantism.fire": "불",
+  "element.enchantism.mystical": "신화",
 
   "tooltip.enchantism.element_container.empty": "저장된 원소 없음",
   "tooltip.enchantism.element_container.element": "원소: %s",
