@@ -10,79 +10,39 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.enchantment.Enchantment;
 
-@SuppressWarnings({"deprecation"})
+@SuppressWarnings({"null", "deprecation"})
 public final class ElementEnchantmentSelector {
-  /*
-   * This weight always participates in selection.
-   *
-   * When selected, the applicator produces a vanilla
-   * enchantment based on the dominant input element.
-   */
-  private static final double FALLBACK_SCORE = 300.0;
+  private static final double FALLBACK_SCORE = 150.0;
 
-  /*
-   * The maximum total amount consumed by all nine slots:
-   *
-   * 100 + 90 + 80 + 70 + 60 + 50 + 40 + 30 + 20 = 540
-   */
   private static final int MAX_TOTAL_ELEMENT_AMOUNT = 540;
 
-  /*
-   * Custom enchantment recipes are registered here
-   * after the enchantment registry has been initialized.
-   */
+  private static final int ADVANCED_MIN_DOMINANT_AMOUNT = 180;
+  private static final int ADVANCED_MIN_TOTAL_AMOUNT = 300;
+
+  private static final int RARE_MIN_DOMINANT_AMOUNT = 280;
+  private static final int RARE_MIN_TOTAL_AMOUNT = 450;
+
+  private static final int COMMON_TIER_WEIGHT = 100;
+  private static final int ADVANCED_TIER_WEIGHT = 35;
+  private static final int RARE_TIER_WEIGHT = 10;
+
   private static final List<ElementEnchantmentRecipe> RECIPES = new ArrayList<>();
 
-  /*
-   * Vanilla fallback pools.
-   *
-   * Strings are used instead of direct Enchantments constants
-   * so that the pools remain easy to edit and inspect.
-   */
-  private static final Map<ElementType, List<String>> FALLBACK_ENCHANTMENT_IDS =
+  private static final Map<ElementType, FallbackPool> FALLBACK_POOLS =
       new EnumMap<>(ElementType.class);
 
+  private static final FallbackPool GENERAL_FALLBACK_POOL =
+      new FallbackPool(
+          List.of("unbreaking", "protection", "efficiency", "sharpness", "power"),
+          List.of(),
+          List.of());
+
   static {
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.STONE,
-        List.of("efficiency", "unbreaking", "protection", "blast_protection", "knockback"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.WOOD, List.of("efficiency", "unbreaking", "power", "punch"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.DUST, List.of("fortune", "looting", "multishot", "quick_charge", "infinity"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.METAL,
-        List.of("sharpness", "protection", "efficiency", "unbreaking", "sweeping"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.CRYSTAL, List.of("fortune", "silk_touch", "mending", "channeling", "loyalty"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.LIFE,
-        List.of("mending", "thorns", "respiration", "feather_falling", "looting"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.WATER,
-        List.of("respiration", "aqua_affinity", "depth_strider", "riptide", "loyalty", "impaling"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.FIRE, List.of("fire_aspect", "flame", "fire_protection", "sharpness", "power"));
-
-    FALLBACK_ENCHANTMENT_IDS.put(
-        ElementType.MYSTICAL,
-        List.of("mending", "frost_walker", "soul_speed", "swift_sneak", "channeling"));
+    registerFallbackPools();
   }
 
   private ElementEnchantmentSelector() {}
 
-  /**
-   * Registers a custom enchantment recipe.
-   *
-   * <p>This should be called after mod enchantments have been registered.
-   */
   public static void registerRecipe(ElementEnchantmentRecipe recipe) {
     if (recipe == null) {
       throw new IllegalArgumentException("Element enchantment recipe cannot be null");
@@ -91,16 +51,10 @@ public final class ElementEnchantmentSelector {
     RECIPES.add(recipe);
   }
 
-  /**
-   * Removes all registered custom recipes.
-   *
-   * <p>Mainly useful during development or data reloading.
-   */
   public static void clearRecipes() {
     RECIPES.clear();
   }
 
-  /** Selects either a custom enchantment or a dominant-element vanilla fallback enchantment. */
   public static SelectedEnchantment select(ElementEnchantmentContext context, RandomSource random) {
     List<ScoredRecipe> scoredRecipes = calculateRecipeScores(context);
 
@@ -108,19 +62,12 @@ public final class ElementEnchantmentSelector {
 
     double totalSelectionScore = FALLBACK_SCORE + customScoreTotal;
 
-    /*
-     * FALLBACK_SCORE is always positive, so totalSelectionScore
-     * should never be zero under normal conditions.
-     */
     if (!Double.isFinite(totalSelectionScore) || totalSelectionScore <= 0.0) {
       return selectFallback(context, random);
     }
 
     double roll = random.nextDouble() * totalSelectionScore;
 
-    /*
-     * The first 100 points belong to the fallback result.
-     */
     if (roll < FALLBACK_SCORE) {
       return selectFallback(context, random);
     }
@@ -135,33 +82,80 @@ public final class ElementEnchantmentSelector {
       roll -= scoredRecipe.score();
     }
 
-    /*
-     * Floating-point rounding can leave a tiny unmatched
-     * interval, so fall back safely instead of returning null.
-     */
     return selectFallback(context, random);
+  }
+
+  private static void registerFallbackPools() {
+    FALLBACK_POOLS.put(
+        ElementType.STONE,
+        new FallbackPool(
+            List.of("efficiency", "unbreaking", "blast_protection"),
+            List.of("protection", "knockback"),
+            List.of("fortune")));
+
+    FALLBACK_POOLS.put(
+        ElementType.WOOD,
+        new FallbackPool(
+            List.of("efficiency", "unbreaking", "power"),
+            List.of("punch", "quick_charge"),
+            List.of("infinity")));
+
+    FALLBACK_POOLS.put(
+        ElementType.DUST,
+        new FallbackPool(
+            List.of("quick_charge", "piercing", "looting"),
+            List.of("multishot", "fortune"),
+            List.of("infinity")));
+
+    FALLBACK_POOLS.put(
+        ElementType.METAL,
+        new FallbackPool(
+            List.of("sharpness", "efficiency", "unbreaking", "protection"),
+            List.of("sweeping", "piercing", "smite"),
+            List.of("fortune")));
+
+    FALLBACK_POOLS.put(
+        ElementType.CRYSTAL,
+        new FallbackPool(
+            List.of("fortune", "loyalty", "channeling"),
+            List.of("silk_touch", "impaling"),
+            List.of("mending")));
+
+    FALLBACK_POOLS.put(
+        ElementType.LIFE,
+        new FallbackPool(
+            List.of("thorns", "respiration", "feather_falling"),
+            List.of("looting", "depth_strider"),
+            List.of("mending")));
+
+    FALLBACK_POOLS.put(
+        ElementType.WATER,
+        new FallbackPool(
+            List.of("respiration", "aqua_affinity", "depth_strider", "impaling"),
+            List.of("loyalty", "riptide"),
+            List.of("frost_walker")));
+
+    FALLBACK_POOLS.put(
+        ElementType.FIRE,
+        new FallbackPool(
+            List.of("fire_protection", "fire_aspect", "flame"),
+            List.of("sharpness", "power"),
+            List.of()));
+
+    FALLBACK_POOLS.put(
+        ElementType.MYSTICAL,
+        new FallbackPool(
+            List.of("unbreaking", "protection", "loyalty"),
+            List.of("channeling", "frost_walker"),
+            List.of("mending", "soul_speed", "swift_sneak")));
   }
 
   private static List<ScoredRecipe> calculateRecipeScores(ElementEnchantmentContext context) {
     List<ScoredRecipe> scoredRecipes = new ArrayList<>();
 
     for (ElementEnchantmentRecipe recipe : RECIPES) {
-      Enchantment enchantment = recipe.enchantment();
-
-      if (enchantment == null) {
-        continue;
-      }
-
-      if (!enchantment.isAllowedOnBooks()) {
-        continue;
-      }
-
       double score = ElementEnchantmentScorer.calculateScore(recipe, context);
 
-      /*
-       * Zero-scored enchantments do not participate.
-       * Non-finite values are discarded defensively.
-       */
       if (!Double.isFinite(score) || score <= 0.0) {
         continue;
       }
@@ -182,38 +176,84 @@ public final class ElementEnchantmentSelector {
     return total;
   }
 
-  /**
-   * Produces a vanilla enchantment based on the element with the greatest total consumed amount.
-   */
   private static SelectedEnchantment selectFallback(
       ElementEnchantmentContext context, RandomSource random) {
     ElementType dominantElement = context.chooseDominantElement(random);
 
-    List<Enchantment> candidates = collectFallbackCandidates(dominantElement);
+    FallbackPool pool = FALLBACK_POOLS.getOrDefault(dominantElement, GENERAL_FALLBACK_POOL);
 
-    /*
-     * If an element-specific pool cannot be resolved,
-     * use all valid book enchantments as a final fallback.
-     */
+    FallbackTier maximumTier = getMaximumFallbackTier(dominantElement, context);
+
+    FallbackTier selectedTier = selectFallbackTier(pool, maximumTier, random);
+
+    List<Enchantment> candidates = collectFallbackCandidates(pool, selectedTier);
+
     if (candidates.isEmpty()) {
-      candidates = collectGeneralFallbackCandidates();
+      candidates = collectFallbackCandidates(GENERAL_FALLBACK_POOL, FallbackTier.COMMON);
     }
 
     if (candidates.isEmpty()) {
       return null;
     }
 
-    Enchantment selected = candidates.get(random.nextInt(candidates.size()));
+    Enchantment enchantment = candidates.get(random.nextInt(candidates.size()));
 
-    return createSelection(selected, context, random);
+    return createSelection(enchantment, context, random);
   }
 
-  private static List<Enchantment> collectFallbackCandidates(ElementType element) {
-    List<String> enchantmentIds = FALLBACK_ENCHANTMENT_IDS.get(element);
+  private static FallbackTier getMaximumFallbackTier(
+      ElementType dominantElement, ElementEnchantmentContext context) {
+    int dominantAmount = context.getAmount(dominantElement);
 
-    if (enchantmentIds == null || enchantmentIds.isEmpty()) {
-      return List.of();
+    int totalAmount = context.getTotalAmount();
+
+    if (dominantAmount >= RARE_MIN_DOMINANT_AMOUNT && totalAmount >= RARE_MIN_TOTAL_AMOUNT) {
+      return FallbackTier.RARE;
     }
+
+    if (dominantAmount >= ADVANCED_MIN_DOMINANT_AMOUNT
+        && totalAmount >= ADVANCED_MIN_TOTAL_AMOUNT) {
+      return FallbackTier.ADVANCED;
+    }
+
+    return FallbackTier.COMMON;
+  }
+
+  private static FallbackTier selectFallbackTier(
+      FallbackPool pool, FallbackTier maximumTier, RandomSource random) {
+    int commonWeight = pool.common().isEmpty() ? 0 : COMMON_TIER_WEIGHT;
+
+    int advancedWeight =
+        maximumTier.ordinal() >= FallbackTier.ADVANCED.ordinal() && !pool.advanced().isEmpty()
+            ? ADVANCED_TIER_WEIGHT
+            : 0;
+
+    int rareWeight =
+        maximumTier == FallbackTier.RARE && !pool.rare().isEmpty() ? RARE_TIER_WEIGHT : 0;
+
+    int totalWeight = commonWeight + advancedWeight + rareWeight;
+
+    if (totalWeight <= 0) {
+      return FallbackTier.COMMON;
+    }
+
+    int roll = random.nextInt(totalWeight);
+
+    if (roll < commonWeight) {
+      return FallbackTier.COMMON;
+    }
+
+    roll -= commonWeight;
+
+    if (roll < advancedWeight) {
+      return FallbackTier.ADVANCED;
+    }
+
+    return FallbackTier.RARE;
+  }
+
+  private static List<Enchantment> collectFallbackCandidates(FallbackPool pool, FallbackTier tier) {
+    List<String> enchantmentIds = getTierEntries(pool, tier);
 
     List<Enchantment> candidates = new ArrayList<>();
 
@@ -234,25 +274,12 @@ public final class ElementEnchantmentSelector {
     return candidates;
   }
 
-  /**
-   * Final fallback used only when the dominant element pool contains no resolvable enchantments.
-   */
-  private static List<Enchantment> collectGeneralFallbackCandidates() {
-    List<Enchantment> candidates = new ArrayList<>();
-
-    for (Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
-      if (!enchantment.isDiscoverable()) {
-        continue;
-      }
-
-      if (!enchantment.isAllowedOnBooks()) {
-        continue;
-      }
-
-      candidates.add(enchantment);
-    }
-
-    return candidates;
+  private static List<String> getTierEntries(FallbackPool pool, FallbackTier tier) {
+    return switch (tier) {
+      case COMMON -> pool.common();
+      case ADVANCED -> pool.advanced();
+      case RARE -> pool.rare();
+    };
   }
 
   private static Enchantment resolveVanillaEnchantment(String path) {
@@ -272,13 +299,6 @@ public final class ElementEnchantmentSelector {
     return new SelectedEnchantment(enchantment, level);
   }
 
-  /**
-   * Determines the maximum possible result level from the total amount consumed by the nine
-   * applicator slots.
-   *
-   * <p>More element usage unlocks higher enchantment levels, but the actual level is still randomly
-   * selected between the enchantment minimum and the currently unlocked maximum.
-   */
   private static int selectLevel(
       Enchantment enchantment, ElementEnchantmentContext context, RandomSource random) {
     int minimumLevel = enchantment.getMinLevel();
@@ -295,10 +315,6 @@ public final class ElementEnchantmentSelector {
 
     int levelRange = maximumLevel - minimumLevel;
 
-    /*
-     * quality 0.0 -> minimum level only
-     * quality 1.0 -> full maximum level unlocked
-     */
     int unlockedAdditionalLevels = (int) Math.floor(quality * (levelRange + 1));
 
     unlockedAdditionalLevels = Math.min(levelRange, unlockedAdditionalLevels);
@@ -311,6 +327,14 @@ public final class ElementEnchantmentSelector {
 
     return minimumLevel + random.nextInt(unlockedMaximumLevel - minimumLevel + 1);
   }
+
+  private enum FallbackTier {
+    COMMON,
+    ADVANCED,
+    RARE
+  }
+
+  private record FallbackPool(List<String> common, List<String> advanced, List<String> rare) {}
 
   private record ScoredRecipe(ElementEnchantmentRecipe recipe, double score) {}
 }
