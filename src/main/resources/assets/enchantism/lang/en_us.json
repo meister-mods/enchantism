@@ -27,7 +27,9 @@
   "enchantment.enchantism.stealth.desc": "Prevents hostile mobs from targeting you first while crouching.",
   "enchantment.enchantism.meditation": "Meditation",
   "enchantment.enchantism.meditation.desc": "Grants Regeneration while crouching and remaining still. After meditating for 3 seconds, the effect lasts for 3 seconds after moving or standing up.",
-
+  "enchantment.enchantism.swift_blade": "Swift Blade",
+  "enchantment.enchantism.swift_blade.desc": "Reduces attack cooldown.",
+  
   "tooltip.enchantism.element_container.empty": "No element stored",
   "tooltip.enchantism.element_container.element": "Element: %s",
   "tooltip.enchantism.element_container.amount": "Stored: %s/%s",
