@@ -1,4 +1,4 @@
-package io.github.meistermods.enchantism.element;
+package io.github.meistermods.enchantism.registry;
 
 import io.github.meistermods.enchantism.Enchantism;
 import net.minecraft.core.registries.Registries;

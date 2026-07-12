@@ -1,6 +1,7 @@
 package io.github.meistermods.enchantism.element;
 
 import io.github.meistermods.enchantism.registry.ModBlocks;
+import io.github.meistermods.enchantism.registry.ModElementTags;
 import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.world.item.Item;
@@ -225,6 +226,14 @@ public final class ElementHelper {
 
     if (stack.is(ModElementTags.MYSTICAL)) {
       return resolveSingleElement(ElementType.MYSTICAL, 100, containerElement);
+    }
+
+    if (stack.is(ModElementTags.WATER)) {
+      return resolveSingleElement(ElementType.WATER, 10, containerElement);
+    }
+
+    if (stack.is(ModElementTags.FIRE)) {
+      return resolveSingleElement(ElementType.FIRE, 10, containerElement);
     }
 
     return null;
