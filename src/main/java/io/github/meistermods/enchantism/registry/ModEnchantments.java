@@ -2,6 +2,7 @@ package io.github.meistermods.enchantism.registry;
 
 import io.github.meistermods.enchantism.Enchantism;
 import io.github.meistermods.enchantism.enchantment.LignificationEnchantment;
+import io.github.meistermods.enchantism.enchantment.MeditationEnchantment;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -15,6 +16,11 @@ public final class ModEnchantments {
   public static final RegistryObject<Enchantment> LIGNIFICATION =
       ENCHANTMENTS.register("lignification", LignificationEnchantment::new);
 
+      public static final RegistryObject<Enchantment> MEDITATION =
+    ENCHANTMENTS.register(
+        "meditation",
+        MeditationEnchantment::new);
+        
   private ModEnchantments() {}
 
   public static void register(IEventBus modEventBus) {

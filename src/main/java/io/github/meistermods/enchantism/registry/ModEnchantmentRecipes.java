@@ -1,9 +1,12 @@
-package io.github.meistermods.enchantism.enchantment;
+package io.github.meistermods.enchantism.registry;
 
-import io.github.meistermods.enchantism.element.ElementType;
-import io.github.meistermods.enchantism.registry.ModEnchantments;
 import java.util.Map;
 import java.util.Set;
+
+import io.github.meistermods.enchantism.element.ElementType;
+import io.github.meistermods.enchantism.enchantment.CatalystPreference;
+import io.github.meistermods.enchantism.enchantment.ElementEnchantmentRecipe;
+import io.github.meistermods.enchantism.enchantment.ElementEnchantmentSelector;
 
 public final class ModEnchantmentRecipes {
   private static boolean registered;
@@ -37,5 +40,24 @@ public final class ModEnchantmentRecipes {
             Set.of(ElementType.FIRE),
             100.0,
             12.0));
+
+  ElementEnchantmentSelector.registerRecipe(
+      new ElementEnchantmentRecipe(
+          ModEnchantments.MEDITATION.get(),
+          Map.of(
+              ElementType.LIFE, 2.0,
+              ElementType.MYSTICAL, 1.0),
+          360,
+          Map.of(
+              ElementType.WATER,
+              new CatalystPreference(60, 0.40),
+              ElementType.CRYSTAL,
+              new CatalystPreference(40, 0.30),
+              ElementType.FIRE,
+              new CatalystPreference(50, -0.50)),
+          Set.of(),
+          Set.of(ElementType.METAL),
+          90.0,
+          12.0));
   }
 }

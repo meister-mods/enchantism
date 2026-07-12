@@ -1,9 +1,9 @@
 package io.github.meistermods.enchantism;
 
-import io.github.meistermods.enchantism.enchantment.ModEnchantmentRecipes;
 import io.github.meistermods.enchantism.registry.ModBlockEntities;
 import io.github.meistermods.enchantism.registry.ModBlocks;
 import io.github.meistermods.enchantism.registry.ModCreativeTabs;
+import io.github.meistermods.enchantism.registry.ModEnchantmentRecipes;
 import io.github.meistermods.enchantism.registry.ModEnchantments;
 import io.github.meistermods.enchantism.registry.ModItems;
 import io.github.meistermods.enchantism.registry.ModMenus;

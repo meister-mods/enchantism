@@ -23,6 +23,8 @@
 
   "enchantment.enchantism.lignification": "Lignification",
   "enchantment.enchantism.lignification.desc": "While crouching, hostile monsters do not initiate attacks against you.",
+  "enchantment.enchantism.meditation": "Meditation",
+  "enchantment.enchantism.meditation.desc": "Grants Regeneration while crouching. After meditating for at least 3 seconds, the effect persists for 3 seconds after standing up.",
 
   "tooltip.enchantism.element_container.empty": "No element stored",
   "tooltip.enchantism.element_container.element": "Element: %s",
