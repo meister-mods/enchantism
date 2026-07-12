@@ -34,8 +34,8 @@ public final class ModCreativeTabs {
                         output.accept(ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get());
                         output.accept(ModBlocks.ENCHANTMENT_APPLICATOR_ITEM.get());
                         output.accept(ModBlocks.ELEMENT_INFUSER_ITEM.get());
-                        output.accept(ModItems.ELEMENT_CONTAINER.get());
                         output.accept(ModBlocks.COMPRESSED_COBBLESTONE_ITEM.get());
+                        output.accept(ModItems.ELEMENT_CONTAINER.get());
 
                         ItemStack emptyContainer = new ItemStack(ModItems.ELEMENT_CONTAINER.get());
 
