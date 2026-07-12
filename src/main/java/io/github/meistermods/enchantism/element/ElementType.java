@@ -3,7 +3,6 @@ package io.github.meistermods.enchantism.element;
 import java.util.Locale;
 import net.minecraft.network.chat.Component;
 
-@SuppressWarnings({"null"})
 public enum ElementType {
   EMPTY(0xFFFFFF),
   STONE(0x808080),

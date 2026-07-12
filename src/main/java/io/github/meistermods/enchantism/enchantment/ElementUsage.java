@@ -2,7 +2,6 @@ package io.github.meistermods.enchantism.enchantment;
 
 import io.github.meistermods.enchantism.element.ElementType;
 
-@SuppressWarnings({"null"})
 public record ElementUsage(int slot, ElementType element, int amount) {
   public ElementUsage {
     if (slot < 0) {

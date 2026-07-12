@@ -1,6 +1,5 @@
 package io.github.meistermods.enchantism.element;
 
-@SuppressWarnings({"null"})
 public record ElementMaterialData(ElementType elementType, int amount) {
   public ElementMaterialData {
     if (elementType == ElementType.EMPTY) {

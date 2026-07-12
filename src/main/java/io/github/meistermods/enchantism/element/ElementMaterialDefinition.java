@@ -3,7 +3,6 @@ package io.github.meistermods.enchantism.element;
 import java.util.EnumMap;
 import java.util.Map;
 
-@SuppressWarnings({"null"})
 public final class ElementMaterialDefinition {
   private final ElementType defaultElement;
 

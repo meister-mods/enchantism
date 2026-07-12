@@ -157,11 +157,7 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
   }
 
   private void process() {
-    if (this.level == null) {
-      return;
-    }
-
-    if (!this.canProcess()) {
+    if (this.level == null || !this.canProcess()) {
       return;
     }
 
@@ -175,14 +171,14 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
 
     SelectedEnchantment selected = ElementEnchantmentSelector.select(context, this.level.random);
 
+    /*
+     * This should occur only when there are no valid
+     * custom or fallback enchantments.
+     */
     if (selected == null) {
       return;
     }
 
-    /*
-     * First consume elements from copied containers.
-     * The real inventory is modified only after every copy succeeds.
-     */
     List<ItemStack> updatedContainers = new ArrayList<>();
 
     for (ElementUsage usage : usages) {
@@ -197,28 +193,17 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
       updatedContainers.add(copiedContainer);
     }
 
-    /*
-     * Create the result before committing the copied containers.
-     */
     ItemStack result = new ItemStack(Items.ENCHANTED_BOOK);
 
     EnchantedBookItem.addEnchantment(
         result, new EnchantmentInstance(selected.enchantment(), selected.level()));
 
-    /*
-     * Commit all updated element containers at once.
-     */
     for (int index = 0; index < usages.size(); index++) {
       ElementUsage usage = usages.get(index);
 
-      ItemStack updatedContainer = updatedContainers.get(index);
-
-      this.items.set(usage.slot(), updatedContainer);
+      this.items.set(usage.slot(), updatedContainers.get(index));
     }
 
-    /*
-     * Consume one normal book.
-     */
     ItemStack book = this.items.get(BOOK_SLOT);
 
     book.shrink(1);
@@ -227,9 +212,6 @@ public final class EnchantmentApplicatorBlockEntity extends BlockEntity
       this.items.set(BOOK_SLOT, ItemStack.EMPTY);
     }
 
-    /*
-     * Store the enchanted book in the output slot.
-     */
     this.items.set(OUTPUT_SLOT, result);
 
     this.setChanged();
