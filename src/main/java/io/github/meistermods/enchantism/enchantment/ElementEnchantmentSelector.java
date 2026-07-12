@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.enchantment.Enchantment;
 
-@SuppressWarnings({"null", "deprecation"})
+@SuppressWarnings({"deprecation"})
 public final class ElementEnchantmentSelector {
   private static final double FALLBACK_SCORE = 150.0;
 
@@ -25,6 +25,8 @@ public final class ElementEnchantmentSelector {
   private static final int COMMON_TIER_WEIGHT = 100;
   private static final int ADVANCED_TIER_WEIGHT = 35;
   private static final int RARE_TIER_WEIGHT = 10;
+
+  private static final int[] FALLBACK_LEVEL_WEIGHTS = {60, 22, 10, 5, 3};
 
   private static final List<ElementEnchantmentRecipe> RECIPES = new ArrayList<>();
 
@@ -76,7 +78,7 @@ public final class ElementEnchantmentSelector {
 
     for (ScoredRecipe scoredRecipe : scoredRecipes) {
       if (roll < scoredRecipe.score()) {
-        return createSelection(scoredRecipe.recipe().enchantment(), context, random);
+        return createCustomSelection(scoredRecipe.recipe().enchantment(), context, random);
       }
 
       roll -= scoredRecipe.score();
@@ -198,7 +200,7 @@ public final class ElementEnchantmentSelector {
 
     Enchantment enchantment = candidates.get(random.nextInt(candidates.size()));
 
-    return createSelection(enchantment, context, random);
+    return createFallbackSelection(enchantment, context, dominantElement, random);
   }
 
   private static FallbackTier getMaximumFallbackTier(
@@ -292,14 +294,114 @@ public final class ElementEnchantmentSelector {
     return BuiltInRegistries.ENCHANTMENT.getOptional(location).orElse(null);
   }
 
-  private static SelectedEnchantment createSelection(
+  private static SelectedEnchantment createCustomSelection(
       Enchantment enchantment, ElementEnchantmentContext context, RandomSource random) {
-    int level = selectLevel(enchantment, context, random);
+    int level = selectCustomLevel(enchantment, context, random);
 
     return new SelectedEnchantment(enchantment, level);
   }
 
-  private static int selectLevel(
+  private static SelectedEnchantment createFallbackSelection(
+      Enchantment enchantment,
+      ElementEnchantmentContext context,
+      ElementType dominantElement,
+      RandomSource random) {
+    int level = selectFallbackLevel(enchantment, context, dominantElement, random);
+
+    return new SelectedEnchantment(enchantment, level);
+  }
+
+  private static int selectFallbackLevel(
+      Enchantment enchantment,
+      ElementEnchantmentContext context,
+      ElementType dominantElement,
+      RandomSource random) {
+    int minimumLevel = enchantment.getMinLevel();
+    int maximumLevel = enchantment.getMaxLevel();
+
+    if (minimumLevel >= maximumLevel) {
+      return minimumLevel;
+    }
+
+    int totalAmount = Math.min(context.getTotalAmount(), MAX_TOTAL_ELEMENT_AMOUNT);
+
+    int dominantAmount = context.getAmount(dominantElement);
+
+    int unlockedMaximumLevel =
+        getUnlockedFallbackMaximumLevel(minimumLevel, maximumLevel, totalAmount, dominantAmount);
+
+    if (unlockedMaximumLevel <= minimumLevel) {
+      return minimumLevel;
+    }
+
+    return selectWeightedFallbackLevel(minimumLevel, unlockedMaximumLevel, random);
+  }
+
+  private static int getUnlockedFallbackMaximumLevel(
+      int minimumLevel, int maximumLevel, int totalAmount, int dominantAmount) {
+    int unlockedLevel = minimumLevel;
+
+    if (totalAmount >= 180 && dominantAmount >= 80) {
+      unlockedLevel = Math.max(unlockedLevel, 2);
+    }
+
+    if (totalAmount >= 300 && dominantAmount >= 140) {
+      unlockedLevel = Math.max(unlockedLevel, 3);
+    }
+
+    if (totalAmount >= 420 && dominantAmount >= 220) {
+      unlockedLevel = Math.max(unlockedLevel, 4);
+    }
+
+    if (totalAmount >= 500 && dominantAmount >= 300) {
+      unlockedLevel = Math.max(unlockedLevel, 5);
+    }
+
+    return Math.min(maximumLevel, unlockedLevel);
+  }
+
+  private static int selectWeightedFallbackLevel(
+      int minimumLevel, int maximumLevel, RandomSource random) {
+    int totalWeight = 0;
+
+    for (int level = minimumLevel; level <= maximumLevel; level++) {
+      totalWeight += getFallbackLevelWeight(level);
+    }
+
+    if (totalWeight <= 0) {
+      return minimumLevel;
+    }
+
+    int roll = random.nextInt(totalWeight);
+
+    for (int level = minimumLevel; level <= maximumLevel; level++) {
+      int weight = getFallbackLevelWeight(level);
+
+      if (roll < weight) {
+        return level;
+      }
+
+      roll -= weight;
+    }
+
+    return minimumLevel;
+  }
+
+  private static int getFallbackLevelWeight(int level) {
+    int index = level - 1;
+
+    if (index < 0) {
+      return FALLBACK_LEVEL_WEIGHTS[0];
+    }
+
+    if (index >= FALLBACK_LEVEL_WEIGHTS.length) {
+      return 1;
+    }
+
+    return FALLBACK_LEVEL_WEIGHTS[index];
+  }
+
+  private static int selectCustomLevel(
       Enchantment enchantment, ElementEnchantmentContext context, RandomSource random) {
     int minimumLevel = enchantment.getMinLevel();
 
