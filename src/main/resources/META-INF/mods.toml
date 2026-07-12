@@ -26,10 +26,3 @@ mandatory=true
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
-
-[[dependencies.${mod_id}]]
-modId="patchouli"
-mandatory=true
-versionRange="[1.20.1-85-FORGE,)"
-ordering="AFTER"
-side="BOTH"
