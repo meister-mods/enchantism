@@ -8,7 +8,12 @@ public enum ElementType {
   EMPTY,
   STONE,
   WOOD,
-  DUST;
+  DUST,
+  METAL,
+  CRYSTAL,
+  LIFE,
+  WATER,
+  FIRE;
 
   public String getSerializedName() {
     return this.name().toLowerCase(Locale.ROOT);

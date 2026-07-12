@@ -2,6 +2,7 @@ package io.github.meistermods.enchantism.blockentity;
 
 import io.github.meistermods.enchantism.element.ElementHelper;
 import io.github.meistermods.enchantism.element.ElementMaterialData;
+import io.github.meistermods.enchantism.element.ElementType;
 import io.github.meistermods.enchantism.item.ElementContainerItem;
 import io.github.meistermods.enchantism.menu.ElementInfuserMenu;
 import io.github.meistermods.enchantism.registry.ModBlockEntities;
@@ -102,7 +103,9 @@ public final class ElementInfuserBlockEntity extends BlockEntity
       return false;
     }
 
-    ElementMaterialData materialData = ElementHelper.getMaterialData(material);
+    ElementType containerElement = ElementContainerItem.getElement(container);
+
+    ElementMaterialData materialData = ElementHelper.getMaterialData(material, containerElement);
 
     if (materialData == null) {
       return false;
@@ -128,7 +131,9 @@ public final class ElementInfuserBlockEntity extends BlockEntity
 
     ItemStack container = this.items.get(CONTAINER_SLOT);
 
-    ElementMaterialData materialData = ElementHelper.getMaterialData(material);
+    ElementType containerElement = ElementContainerItem.getElement(container);
+
+    ElementMaterialData materialData = ElementHelper.getMaterialData(material, containerElement);
 
     if (materialData == null) {
       return;

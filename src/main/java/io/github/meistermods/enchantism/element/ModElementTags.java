@@ -14,6 +14,16 @@ public final class ModElementTags {
 
   public static final TagKey<Item> DUST = create("elements/dust");
 
+  public static final TagKey<Item> METAL = create("elements/metal");
+
+  public static final TagKey<Item> CRYSTAL = create("elements/crystal");
+
+  public static final TagKey<Item> LIFE = create("elements/life");
+
+  public static final TagKey<Item> WATER = create("elements/water");
+
+  public static final TagKey<Item> FIRE = create("elements/fire");
+
   private ModElementTags() {}
 
   private static TagKey<Item> create(String path) {
