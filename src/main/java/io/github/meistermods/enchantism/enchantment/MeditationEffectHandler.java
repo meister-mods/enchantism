@@ -28,7 +28,8 @@ public final class MeditationEffectHandler {
    * A short duration is refreshed while meditating.
    * When movement begins, the effect disappears shortly afterward.
    */
-  private static final int ACTIVE_REFRESH_DURATION_TICKS = 5;
+  private static final int ACTIVE_EFFECT_DURATION_TICKS = 60;
+  private static final int ACTIVE_REFRESH_THRESHOLD_TICKS = 10;
 
   /*
    * Movement smaller than 0.001 blocks is ignored to avoid
@@ -78,7 +79,7 @@ public final class MeditationEffectHandler {
      * even if the player moves or stops crouching.
      */
     if (lingerTicks > 0) {
-      applyRegeneration(player, meditationLevel, ACTIVE_REFRESH_DURATION_TICKS);
+      maintainRegeneration(player, meditationLevel);
 
       data.putInt(LINGER_TICKS_TAG, lingerTicks - 1);
     }
@@ -94,7 +95,7 @@ public final class MeditationEffectHandler {
         data.putBoolean(WAS_CROUCHING_TAG, true);
         data.putBoolean(CHARGED_TAG, false);
 
-        applyRegeneration(player, meditationLevel, ACTIVE_REFRESH_DURATION_TICKS);
+        maintainRegeneration(player, meditationLevel);
 
         return;
       }
@@ -130,7 +131,7 @@ public final class MeditationEffectHandler {
         data.putBoolean(CHARGED_TAG, true);
       }
 
-      applyRegeneration(player, meditationLevel, ACTIVE_REFRESH_DURATION_TICKS);
+      maintainRegeneration(player, meditationLevel);
 
       return;
     }
@@ -172,29 +173,28 @@ public final class MeditationEffectHandler {
     data.putBoolean(ANCHOR_INITIALIZED_TAG, true);
   }
 
-  private static void applyRegeneration(Player player, int meditationLevel, int duration) {
+  private static void maintainRegeneration(Player player, int meditationLevel) {
     int amplifier = meditationLevel - 1;
 
     MobEffectInstance currentEffect = player.getEffect(MobEffects.REGENERATION);
 
-    /*
-     * Do not overwrite a stronger regeneration effect.
-     */
-    if (currentEffect != null && currentEffect.getAmplifier() > amplifier) {
+    if (currentEffect == null) {
+      addMeditationRegeneration(player, amplifier, ACTIVE_EFFECT_DURATION_TICKS);
       return;
     }
 
-    /*
-     * Do not shorten an equal-strength regeneration effect.
-     */
-    if (currentEffect != null
-        && currentEffect.getAmplifier() == amplifier
-        && currentEffect.getDuration() >= duration) {
+    if (currentEffect.getAmplifier() > amplifier) {
       return;
     }
 
-    player.addEffect(
-        new MobEffectInstance(MobEffects.REGENERATION, duration, amplifier, true, false, true));
+    if (currentEffect.getAmplifier() < amplifier) {
+      addMeditationRegeneration(player, amplifier, ACTIVE_EFFECT_DURATION_TICKS);
+      return;
+    }
+
+    if (currentEffect.getDuration() <= ACTIVE_REFRESH_THRESHOLD_TICKS) {
+      addMeditationRegeneration(player, amplifier, ACTIVE_EFFECT_DURATION_TICKS);
+    }
   }
 
   private static void clearCrouchingState(CompoundTag data) {
@@ -210,5 +210,10 @@ public final class MeditationEffectHandler {
   private static void clearMeditationState(CompoundTag data) {
     clearCrouchingState(data);
     data.remove(LINGER_TICKS_TAG);
+  }
+
+  private static void addMeditationRegeneration(Player player, int amplifier, int duration) {
+    player.addEffect(
+        new MobEffectInstance(MobEffects.REGENERATION, duration, amplifier, true, false, true));
   }
 }
