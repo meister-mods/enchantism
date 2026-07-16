@@ -3,7 +3,6 @@ package io.github.meistermods.enchantism.client;
 import io.github.meistermods.enchantism.Enchantism;
 import io.github.meistermods.enchantism.client.screen.ElementInfuserScreen;
 import io.github.meistermods.enchantism.client.screen.EnchantmentApplicatorScreen;
-import io.github.meistermods.enchantism.client.screen.SpecialEnchantmentScreen;
 import io.github.meistermods.enchantism.element.ElementType;
 import io.github.meistermods.enchantism.item.ElementContainerItem;
 import io.github.meistermods.enchantism.registry.ModItems;
@@ -27,8 +26,6 @@ public final class ClientModEvents {
   public static void onClientSetup(FMLClientSetupEvent event) {
     event.enqueueWork(
         () -> {
-          MenuScreens.register(ModMenus.SPECIAL_ENCHANTMENT.get(), SpecialEnchantmentScreen::new);
-
           MenuScreens.register(
               ModMenus.ENCHANTMENT_APPLICATOR.get(), EnchantmentApplicatorScreen::new);
 

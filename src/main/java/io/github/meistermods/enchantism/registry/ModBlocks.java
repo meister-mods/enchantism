@@ -3,11 +3,9 @@ package io.github.meistermods.enchantism.registry;
 import io.github.meistermods.enchantism.Enchantism;
 import io.github.meistermods.enchantism.block.ElementInfuserBlock;
 import io.github.meistermods.enchantism.block.EnchantmentApplicatorBlock;
-import io.github.meistermods.enchantism.block.SpecialEnchantmentTableBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -23,18 +21,6 @@ public final class ModBlocks {
 
   public static final DeferredRegister<Item> ITEMS =
       DeferredRegister.create(ForgeRegistries.ITEMS, Enchantism.MOD_ID);
-
-  public static final RegistryObject<Block> SPECIAL_ENCHANTMENT_TABLE =
-      BLOCKS.register(
-          "special_enchantment_table",
-          () ->
-              new SpecialEnchantmentTableBlock(
-                  BlockBehaviour.Properties.copy(Blocks.ENCHANTING_TABLE)));
-
-  public static final RegistryObject<Item> SPECIAL_ENCHANTMENT_TABLE_ITEM =
-      ITEMS.register(
-          "special_enchantment_table",
-          () -> new BlockItem(SPECIAL_ENCHANTMENT_TABLE.get(), new Item.Properties()));
 
   public static final RegistryObject<Block> ENCHANTMENT_APPLICATOR =
       BLOCKS.register(

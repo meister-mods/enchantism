@@ -28,10 +28,9 @@ public final class ModCreativeTabs {
           () ->
               CreativeModeTab.builder()
                   .title(Component.translatable("itemGroup.enchantism"))
-                  .icon(() -> ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get().getDefaultInstance())
+                  .icon(() -> ModItems.ELEMENT_CONTAINER.get().getDefaultInstance())
                   .displayItems(
                       (parameters, output) -> {
-                        output.accept(ModBlocks.SPECIAL_ENCHANTMENT_TABLE_ITEM.get());
                         output.accept(ModBlocks.ENCHANTMENT_APPLICATOR_ITEM.get());
                         output.accept(ModBlocks.ELEMENT_INFUSER_ITEM.get());
                         output.accept(ModBlocks.COMPRESSED_COBBLESTONE_ITEM.get());
