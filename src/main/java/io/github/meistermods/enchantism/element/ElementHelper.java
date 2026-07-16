@@ -1,9 +1,10 @@
 package io.github.meistermods.enchantism.element;
 
-import io.github.meistermods.enchantism.registry.ModBlocks;
-import io.github.meistermods.enchantism.registry.ModElementTags;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.github.meistermods.enchantism.registry.ModBlocks;
+import io.github.meistermods.enchantism.registry.ModElementTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -128,7 +129,6 @@ public final class ElementHelper {
     /*
      * Mystical materials
      */
-    registerMultiple(Items.END_CRYSTAL, ElementType.MYSTICAL, 250).add(ElementType.CRYSTAL, 180);
     registerMultiple(Items.ENCHANTED_GOLDEN_APPLE, ElementType.MYSTICAL, 500)
         .add(ElementType.LIFE, 300);
     registerMultiple(Items.TOTEM_OF_UNDYING, ElementType.MYSTICAL, 750).add(ElementType.LIFE, 500);

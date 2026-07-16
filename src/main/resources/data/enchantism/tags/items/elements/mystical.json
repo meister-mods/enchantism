@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:end_crystal",
     "minecraft:enchanted_golden_apple",
     "minecraft:totem_of_undying",
     "minecraft:nether_star",
